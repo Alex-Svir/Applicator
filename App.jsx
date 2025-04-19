@@ -330,19 +330,35 @@ function generateCoverLetter({ position, company, date, skills }) {
 			font-size: 1.5em;
 			margin-bottom: 0.5em;
 		}
+		th {
+			text-align: left;
+			font-weight: normal;
+			width: 15ch;
+		}
 	</style>
 </head>
 <body>
-
 	<h1>${persconf.name}</h1>
 	<p class="hdr pos">${position}</p>
 	<br>
-	<p>Phone ${persconf.phone}</p>
-	<p>Email <a href="mailto:${persconf.email}">${persconf.email}</a></p>
-	<p>GitHub <a href="https://github.com/${persconf.github}">https://github.com/${persconf.github}</a></p>
+	<table>
+		<tbody>
+		<tr>
+			<th>Phone</th>
+			<td>${persconf.phone}</td>
+		</tr>
+		<tr>
+			<th>Email</th>
+			<td><a href="mailto:${persconf.email}">${persconf.email}</a></td>
+		</tr>
+		<tr>
+			<th>GitHub</th>
+			<td><a href="https://github.com/${persconf.github}">https://github.com/${persconf.github}</a></td>
+		</tr>
+		</tbody>
+	</table>
 	<br>
-	<p>Brighton, ${date}</p>
-	<br>
+	<p>Brighton,&emsp;&emsp;${date}</p>
 	<br>
 	<p>Dear ${company} Team,</p>
 
