@@ -22,6 +22,7 @@ export default function App() {
 	const [position, setPosition] = useState('');
 	const [skillList, setSkillList] = useState([]);
 	const [switches, setSwitches] = useState({});
+	const [skillsCount, setSkillsCount] = useState([0,0]);
 
 
 	async function generatePdf() {
@@ -32,7 +33,6 @@ export default function App() {
 					company,
 					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
 					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
-					//skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(e => e[1][1]).map(e => e[0]) )
 				}),
 				fileName: 'CoverLetter',
 				directory: 'Applicator'
@@ -42,7 +42,6 @@ export default function App() {
 					...DEFAULT_RESUME_PARAMS,
 					position,
 					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => res).map(([key, val]) => key) )
-					//skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(e => e[1][0]).map(e => e[0]) )
 				}),
 				fileName: 'Resume',
 				directory: 'Applicator'
@@ -95,7 +94,7 @@ export default function App() {
 					<Button
 						title="PDF"
 						onPress={ () => generatePdf() }
-						disabled={!company || !position}
+						disabled={!company || !position || skillsCount[0] < 5 || skillsCount[1] < 8}
 					/>
 				</View>
 				<Text style={styles.label}>Company</Text>
@@ -110,21 +109,61 @@ export default function App() {
 					value={position}
 					placeholder={'Position'}
 					onChangeText={ txt => setPosition(txt) } />
+
+				<View style={styles.skillsSummary}>
+					<Pressable
+						onPress={() => Alert.alert(
+							'Cover Letter skills:',
+							skillList.flatMap(
+								sec => sec.filter( (sk, i) => i > 0 )
+										.filter( sk => switches[sec[0]][sk][0] )
+							).join('\n')
+						)} >
+						<Text
+							style={styles.skillsSummaryText}>
+							{skillsCount[0]}
+						</Text>
+					</Pressable>
+					<Pressable
+						onPress={() => Alert.alert(
+							'Resume skills:',
+							skillList.flatMap(
+								sec => sec.filter( (sk, i) => i > 0 )
+										.filter( sk => switches[sec[0]][sk][1] )
+							).join('\n')
+						)} >
+						<Text
+							style={styles.skillsSummaryText}>
+							{skillsCount[1]}
+						</Text>
+					</Pressable>
+				</View>
+
 				<Skills
 					skills={skillList}
 					switches={switches}
-					onSwitch={ (section, skill, idx, val) => setSwitches(
-						sw => ({
-							...sw,
-							[section]: {
-								...sw[section],
-								[skill]: [
-									idx ? sw[section][skill][0] : val,
-									idx ? val : sw[section][skill][1]
-								]
-							}
-						})
-					) }
+					onSwitch={ (section, skill, idx, val) => {
+						setSwitches(
+							sw => ({
+								...sw,
+								[section]: {
+									...sw[section],
+									[skill]: [
+										idx ? sw[section][skill][0] : val,
+										idx ? val : sw[section][skill][1]
+									]
+								}
+							})
+						);
+						setSkillsCount(
+							([cl,res]) => [
+								//idx ? cl : cl + (val ? 1 : -1 ),
+								cl + (idx || val === switches[section][skill][0] ? 0 : val ? 1 : -1 ),
+								//idx ? res + (val ? 1 : -1) : res
+								res + (!idx || val === switches[section][skill][1] ? 0 : val ? 1 : -1)
+							]
+						);
+					} }
 				/>
 			</View>;
 }
@@ -218,6 +257,21 @@ const styles = StyleSheet.create({
 		borderColor: 'blue',
 		borderWidth: 2,
 		borderRadius: 4
+	},
+	skillsSummary: {
+		alignSelf: 'flex-end',
+		marginTop: 20,
+		marginRight: 8,
+		marginBottom: 10,
+		display: 'flex',
+		flexDirection: 'row'
+	},
+	skillsSummaryText: {
+		fontSize: 22,
+		fontWeight: 'bold',
+		fontStyle: 'italic',
+		paddingVertical: 4,
+		paddingHorizontal: 16
 	},
 	skillHeader: {
 		backgroundColor: 'aquamarine',
