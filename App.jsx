@@ -16,6 +16,8 @@ import RNFS from 'react-native-fs';
 import { persconf } from './persconfig';
 
 
+const MAX_SKILLS_SINGLE_COLUMN = 8;
+
 
 export default function App() {
 	const [company, setCompany] = useState('');
@@ -92,7 +94,7 @@ export default function App() {
 				<View
 					style={styles.genButton}>
 					<Button
-						title="PDF"
+						title="GENERATE"
 						onPress={ () => generatePdf() }
 						disabled={!company || !position || skillsCount[0] < 5 || skillsCount[1] < 8}
 					/>
@@ -489,6 +491,9 @@ function generateResume({ position, skills, certificates }) {
 			font-size: 1.5em;
 			margin-bottom: 0.5em;
 		}
+		ul.skill {
+			columns: ${skills.length > MAX_SKILLS_SINGLE_COLUMN ? 2 : 1};
+		}
 	</style>
 </head>
 <body>
@@ -518,11 +523,13 @@ function generateResume({ position, skills, certificates }) {
 	</ul>
 
 	<h2>Skills</h2>
-	<ul>${skills.map( li => '<li>' + li + '</li>' ).join('')}
+	<ul class="skill">
+		${skills.map( li => '<li>' + li + '</li>' ).join('')}
 	</ul>
 
 	<h2>Certification</h2>
-	<ul>${certificates.map( li => '<li>' + li + '</li>' ).join('')}
+	<ul>
+		${certificates.map( li => '<li>' + li + '</li>' ).join('')}
 	</ul>
 
 	<h2>Languages</h2>
