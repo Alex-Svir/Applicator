@@ -113,16 +113,18 @@ export default function App() {
 				<Skills
 					skills={skillList}
 					switches={switches}
-					onSwitch={ (section, skill, idx, val) => setSwitches({
-						...switches,
-						[section]: {
-							...switches[section],
-							[skill]: [
-								idx ? switches[section][skill][0] : val,
-								idx ? val : switches[section][skill][1]
-							]
-						}
-					}) }
+					onSwitch={ (section, skill, idx, val) => setSwitches(
+						sw => ({
+							...sw,
+							[section]: {
+								...sw[section],
+								[skill]: [
+									idx ? sw[section][skill][0] : val,
+									idx ? val : sw[section][skill][1]
+								]
+							}
+						})
+					) }
 				/>
 			</View>;
 }
@@ -152,12 +154,13 @@ function Skills({ skills, switches, onSwitch }) {
 					selected={nm === selected}
 					switches={switches[nm]}
 					onPress={ () => setSelected(selected === nm ? '' : nm) }
+					onSwitch={ (idx, val) => Object.keys(switches[nm]).forEach( key => onSwitch(nm, key, idx, val) ) }
 				/> }
 		/>
 	);
 }
 
-function SkillHeader({ text, selected, switches, onPress }) {
+function SkillHeader({ text, selected, switches, onPress, onSwitch }) {
 	const [clCnt, resCnt, totalCnt] = Object.values(switches).reduce(
 		(acc, [cl,res]) => {
 			if (cl) acc[0]++;
@@ -169,14 +172,19 @@ function SkillHeader({ text, selected, switches, onPress }) {
 	);
 
 	return (
-		<Pressable onPress={onPress}>
-			<Text style={styles.skillHeader}>
+		<Pressable style={styles.skillHeader} onPress={onPress}>
+			<Text style={styles.skillHeaderTitle}>
 				{selected ? '\u261F' : '\u261E'}
 				&emsp;
 				{text}
-				&emsp;
-				{`${totalCnt}>> ${clCnt} / ${resCnt}`}
 			</Text>
+			{ selected ?
+				<>
+				<Switch value={clCnt === totalCnt} onValueChange={ val => onSwitch(0, val) } />
+				<Switch value={resCnt === totalCnt} onValueChange={ val => onSwitch(1, val) } />
+				</> :
+				<Text style={styles.skillHeaderStat}>{`${totalCnt}>> ${clCnt} / ${resCnt}`}</Text>
+			}
 		</Pressable>
 	);
 }
@@ -212,12 +220,23 @@ const styles = StyleSheet.create({
 		borderRadius: 4
 	},
 	skillHeader: {
-		fontSize: 24,
-		fontWeight: 'bold',
 		backgroundColor: 'aquamarine',
 		borderColor: 'white',
 		borderWidth: 1,
-		padding: 5
+		padding: 5,
+		display: 'flex',
+		flexDirection: 'row'
+	},
+	skillHeaderTitle: {
+		fontSize: 24,
+		fontWeight: 'bold',
+		flexGrow: 1
+	},
+	skillHeaderStat: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		fontStyle: 'italic',
+		marginRight: 20
 	},
 	skillItem: {
 		display: 'flex',
