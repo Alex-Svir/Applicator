@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-/*import {
+import {
 	View,
 	SectionList,
 	Pressable,
@@ -10,25 +10,39 @@ import React, { useState, useEffect } from 'react';
 	Alert,
 	StyleSheet
 } from 'react-native';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';*/
-import RNFS from 'react-native-fs';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+//import RNFS from 'react-native-fs';
 
-import { ScreenGenerate } from './src/components/ScreenGenerate';
-
-
-//const MAX_SKILLS_SINGLE_COLUMN = 8;
-//const MIN_COVER_LETTER_SKILLS = 5;
-//const MIN_RESUME_SKILLS = 8;
+import { persconf } from '../../persconfig';
 
 
-export default function App() {
-//	const [company, setCompany] = useState('');
-//	const [position, setPosition] = useState('');
-	const [skillList, setSkillList] = useState('');
-//	const [switches, setSwitches] = useState({});
-//	const [skillsCount, setSkillsCount] = useState([0,0]);
+const MAX_SKILLS_SINGLE_COLUMN = 8;
+const MIN_COVER_LETTER_SKILLS = 5;
+const MIN_RESUME_SKILLS = 8;
 
-/*
+
+export function ScreenGenerate({ skills }) {
+	const [company, setCompany] = useState('');
+	const [position, setPosition] = useState('');
+	const [skillsCount, setSkillsCount] = useState([0,0]);
+	const [skillList, setSkillList] = useState([]);
+	const [switches, setSwitches] = useState({});
+
+	useEffect(
+		() => {
+			const arr = skills.split(/\n{2,}/).filter(d => d)
+									.map( d => d.split('\n').filter(i => i) );
+			const sw = Object.fromEntries(
+				arr.map( a => [ a[0], Object.fromEntries(
+					a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
+				) ] )
+			);
+			setSkillList(arr);
+			setSwitches(sw);
+		},
+		[skills]
+	 );
+
 	async function generatePdf() {
 		try {
 			const coverLetter = await RNHTMLtoPDF.convert({
@@ -55,35 +69,34 @@ export default function App() {
 			Alert.alert('ERROR', err.message);
 		}
 	}
-*/
+
+/*
 	useEffect(
 		() => {
 			async function foo() {
 				const path = RNFS.ExternalStorageDirectoryPath + '/Documents/Applicator/presets/skills.txt';
 				try {
 					const content = await RNFS.readFile(path);
-								setSkillList(content.toString());
-				/*	const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
+					const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
 					const sw = Object.fromEntries(
 						arr.map( a => [ a[0], Object.fromEntries(
 							a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
 						) ] )
 					);
 					setSkillList(arr);
-					setSwitches(sw);*/
+					setSwitches(sw);
 				} catch(err) {
 					try {
 						const content = DEFAULT_SKILLS_FILE_CONTENT;
 						await RNFS.writeFile(path, content, 'utf8');
-								setSkillList(content);
-				/*		const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
+						const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
 						const sw = Object.fromEntries(
 							arr.map( a => [ a[0], Object.fromEntries(
 								a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
 							) ] )
 						);
 						setSkillList(arr);
-						setSwitches(sw);*/
+						setSwitches(sw);
 					} catch (err) {
 						Alert.alert('Skills loading failed', err.message);
 					}
@@ -93,11 +106,7 @@ export default function App() {
 		},
 		[]
 	);
-
-	return <ScreenGenerate skills={skillList} />
-
-
-	/*
+*/
 	return	<View
 				style={styles.root} >
 				<View
@@ -196,10 +205,9 @@ export default function App() {
 					} }
 				/>
 			</View>;
-		*/
 }
 
-/*
+
 function Skills({ skills, switches, onSwitch }) {
 	const [selected, setSelected] = useState('');
 
@@ -269,10 +277,10 @@ function SkillItem({ item, index, section, separators, switches, onSwitch }) {
 		</View>
 	);
 }
-*/
+
 //**************************************************************************************************\\
 //**************************************************************************************************\\
-/*
+
 const styles = StyleSheet.create({
 	root: {
 		height: '100%'
@@ -342,7 +350,7 @@ const styles = StyleSheet.create({
 		marginLeft: 6
 	}
 });
-*/
+
 /**********************************************************************************************************\
  *
  *
@@ -432,7 +440,7 @@ Coming soon
 TypeScript
 Gradle
 Groovy`;
-
+*/
 const DEFAULT_COVER_LETTER_PARAMS = {
 	position: 'Entry-Level Software Developer',
 	company: 'Company',
@@ -459,8 +467,8 @@ const DEFAULT_RESUME_PARAMS = {
 		'Programming Hub Android Development Certification Course'
 	]
 };
-*/
-/*
+
+
 function generateCoverLetter({ position, company, date, skills }) {
 	return `
 <html>
@@ -546,8 +554,7 @@ function generateCoverLetter({ position, company, date, skills }) {
 </html>
 	`;
 }
-*/
-/*
+
 function generateResume({ position, skills, certificates }) {
 	return `
 <html>
@@ -616,4 +623,3 @@ function generateResume({ position, skills, certificates }) {
 </html>
 	`;
 }
-*/
