@@ -17,6 +17,8 @@ import { persconf } from './persconfig';
 
 
 const MAX_SKILLS_SINGLE_COLUMN = 8;
+const MIN_COVER_LETTER_SKILLS = 5;
+const MIN_RESUME_SKILLS = 8;
 
 
 export default function App() {
@@ -95,8 +97,27 @@ export default function App() {
 					style={styles.genButton}>
 					<Button
 						title="GENERATE"
-						onPress={ () => generatePdf() }
-						disabled={!company || !position || skillsCount[0] < 5 || skillsCount[1] < 8}
+						onPress={ () => {
+							const [clSkillsCnt, resSkillsCnt] = Object.values(switches)
+									.flatMap( sect => Object.values(sect) )
+									.reduce(
+										(acc, [cl, res]) => {
+											if (cl) acc[0]++;
+											if (res) acc[1]++;
+											return acc;
+										},
+										[0,0]
+									);
+							if (clSkillsCnt !== skillsCount[0] || resSkillsCnt !== skillsCount[0]) {
+								setSkillsCount([ clSkillsCnt, resSkillsCnt ]);
+							}
+							if (clSkillsCnt >= MIN_COVER_LETTER_SKILLS && resSkillsCnt >= MIN_RESUME_SKILLS) {
+								generatePdf();
+							} else {
+								Alert.alert("Not enough skills", "Select some more skills");
+							}
+						} }
+						disabled={!company || !position || skillsCount[0] < MIN_COVER_LETTER_SKILLS || skillsCount[1] < MIN_RESUME_SKILLS}
 					/>
 				</View>
 				<Text style={styles.label}>Company</Text>
