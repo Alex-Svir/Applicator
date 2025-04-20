@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 //import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Drawer } from 'react-native-drawer-layout';
 
 import RNFS from 'react-native-fs';
@@ -100,22 +102,33 @@ export default function App() {
 		[]
 	);
 
-	return		<Drawer
-					open={sideOpen}
-					onOpen={ () => setSideOpen(true) }
-					onClose={ () => setSideOpen(false) }
-					renderDrawerContent={
-						() => { return <Text>I am a SuperDrawer!</Text>; }
-					}
-					drawerType="front"
-					drawerStyle={{backgroundColor: 'yellow'}}
-					swipeEdgeWidth={60}
-					swipeMinDistance={20} >
-					<ScreenGenerate
-						skills={skillList}
-					/>
-				</Drawer>
+	const Stack = createNativeStackNavigator();
 
+	return (
+		<NavigationContainer>
+			<Drawer
+				open={sideOpen}
+				onOpen={ () => setSideOpen(true) }
+				onClose={ () => setSideOpen(false) }
+				renderDrawerContent={
+					() => <Text>I am a SuperDrawer!</Text>
+				}
+				drawerType="front"
+				drawerStyle={{ backgroundColor: 'yellow' }}
+				swipeEdgeWidth={60}
+				swipeMinInstance={20}
+			>
+				<Stack.Navigator>
+					<Stack.Screen
+						name="Generate"
+						options={{ headerShown: false }}
+					>
+						{ props => <ScreenGenerate {...props} skills={skillList} /> }
+					</Stack.Screen>
+				</Stack.Navigator>
+			</Drawer>
+		</NavigationContainer>
+	);
 
 
 	/*
@@ -218,6 +231,20 @@ export default function App() {
 				/>
 			</View>;
 		*/
+}
+
+function FooFoo(props) {
+
+	console.log(props);
+	console.log(props.route.params);
+
+	return	<View
+				style={{ width: 200, height: 200, backgroundColor: 'aqua' }}
+			>
+				<Text>
+					foo-foo-foo
+				</Text>
+			</View>;
 }
 
 /*
