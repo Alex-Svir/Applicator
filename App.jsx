@@ -62,7 +62,7 @@ export default function App() {
 				const path = RNFS.ExternalStorageDirectoryPath + '/Documents/Applicator/presets/skills.txt';
 				try {
 					const content = await RNFS.readFile(path);
-					const arr = content.toString().split('\n\n').filter(d => d).map( d => d.split('\n').filter( i => i ) );
+					const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
 					const sw = Object.fromEntries(
 						arr.map( a => [ a[0], Object.fromEntries(
 							a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
@@ -74,7 +74,7 @@ export default function App() {
 					try {
 						const content = DEFAULT_SKILLS_FILE_CONTENT;
 						await RNFS.writeFile(path, content, 'utf8');
-						const arr = content.toString().split('\n\n').filter(d => d).map( d => d.split('\n').filter( i => i ) );
+						const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
 						const sw = Object.fromEntries(
 							arr.map( a => [ a[0], Object.fromEntries(
 								a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
