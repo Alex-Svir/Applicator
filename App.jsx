@@ -92,7 +92,8 @@ export default function App() {
 		[]
 	);
 
-	return	<View>
+	return	<View
+				style={styles.root} >
 				<View
 					style={styles.genButton}>
 					<Button
@@ -266,6 +267,9 @@ function SkillItem({ item, index, section, separators, switches, onSwitch }) {
 //**************************************************************************************************\\
 
 const styles = StyleSheet.create({
+	root: {
+		height: '100%'
+	},
 	genButton: {
 		marginHorizontal: 8,
 		marginVertical: 25
