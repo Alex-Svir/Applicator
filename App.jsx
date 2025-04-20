@@ -12,7 +12,6 @@ import {
 	Alert,
 	StyleSheet
 } from 'react-native';
-//import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -37,34 +36,6 @@ export default function App() {
 //	const [skillsCount, setSkillsCount] = useState([0,0]);
 	const [sideOpen, setSideOpen] = useState(false);
 
-/*
-	async function generatePdf() {
-		try {
-			const coverLetter = await RNHTMLtoPDF.convert({
-				html: generateCoverLetter({
-					position,
-					company,
-					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
-				}),
-				fileName: 'CoverLetter',
-				directory: 'Applicator'
-			});
-			const resume = await RNHTMLtoPDF.convert({
-				html: generateResume({
-					...DEFAULT_RESUME_PARAMS,
-					position,
-					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => res).map(([key, val]) => key) )
-				}),
-				fileName: 'Resume',
-				directory: 'Applicator'
-			});
-			Alert.alert('Generated PDF', `Saved at\n\n${coverLetter.filePath}\n\n${resume.filePath}`);
-		} catch(err) {
-			Alert.alert('ERROR', err.message);
-		}
-	}
-*/
 	useEffect(
 		() => {
 			async function foo() {
@@ -72,27 +43,12 @@ export default function App() {
 				try {
 					const content = await RNFS.readFile(path);
 								setSkillList(content.toString());
-				/*	const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
-					const sw = Object.fromEntries(
-						arr.map( a => [ a[0], Object.fromEntries(
-							a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
-						) ] )
-					);
-					setSkillList(arr);
-					setSwitches(sw);*/
+
 				} catch(err) {
 					try {
 						const content = DEFAULT_SKILLS_FILE_CONTENT;
 						await RNFS.writeFile(path, content, 'utf8');
 								setSkillList(content);
-				/*		const arr = content.toString().split(/\n{2,}/).filter(d => d).map( d => d.split('\n').filter( i => i ) );
-						const sw = Object.fromEntries(
-							arr.map( a => [ a[0], Object.fromEntries(
-								a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
-							) ] )
-						);
-						setSkillList(arr);
-						setSwitches(sw);*/
 					} catch (err) {
 						Alert.alert('Skills loading failed', err.message);
 					}
@@ -136,108 +92,6 @@ export default function App() {
 			</Drawer>
 		</NavigationContainer>
 	);
-
-
-	/*
-	return	<View
-				style={styles.root} >
-				<View
-					style={styles.genButton}>
-					<Button
-						title="GENERATE"
-						onPress={ () => {
-							const [clSkillsCnt, resSkillsCnt] = Object.values(switches)
-									.flatMap( sect => Object.values(sect) )
-									.reduce(
-										(acc, [cl, res]) => {
-											if (cl) acc[0]++;
-											if (res) acc[1]++;
-											return acc;
-										},
-										[0,0]
-									);
-							if (clSkillsCnt !== skillsCount[0] || resSkillsCnt !== skillsCount[1]) {
-								setSkillsCount([ clSkillsCnt, resSkillsCnt ]);
-							}
-							if (clSkillsCnt >= MIN_COVER_LETTER_SKILLS && resSkillsCnt >= MIN_RESUME_SKILLS) {
-								generatePdf();
-							} else {
-								Alert.alert("Not enough skills", "Select some more skills");
-							}
-						} }
-						disabled={!company || !position || skillsCount[0] < MIN_COVER_LETTER_SKILLS || skillsCount[1] < MIN_RESUME_SKILLS}
-					/>
-				</View>
-				<Text style={styles.label}>Company</Text>
-				<TextInput
-					style={styles.input}
-					value={company}
-					placeholder={'Company Name'}
-					onChangeText={ txt => setCompany(txt) } />
-				<Text style={styles.label}>Position</Text>
-				<TextInput
-					style={styles.input}
-					value={position}
-					placeholder={'Position'}
-					onChangeText={ txt => setPosition(txt) } />
-
-				<View style={styles.skillsSummary}>
-					<Pressable
-						onPress={() => Alert.alert(
-							'Cover Letter skills:',
-							skillList.flatMap(
-								sec => sec.filter( (sk, i) => i > 0 )
-										.filter( sk => switches[sec[0]][sk][0] )
-							).join('\n')
-						)} >
-						<Text
-							style={styles.skillsSummaryText}>
-							{skillsCount[0]}
-						</Text>
-					</Pressable>
-					<Pressable
-						onPress={() => Alert.alert(
-							'Resume skills:',
-							skillList.flatMap(
-								sec => sec.filter( (sk, i) => i > 0 )
-										.filter( sk => switches[sec[0]][sk][1] )
-							).join('\n')
-						)} >
-						<Text
-							style={styles.skillsSummaryText}>
-							{skillsCount[1]}
-						</Text>
-					</Pressable>
-				</View>
-
-				<Skills
-					skills={skillList}
-					switches={switches}
-					onSwitch={ (section, skill, idx, val) => {
-						setSwitches(
-							sw => ({
-								...sw,
-								[section]: {
-									...sw[section],
-									[skill]: [
-										idx ? sw[section][skill][0] : val,
-										idx ? val : sw[section][skill][1]
-									]
-								}
-							})
-						);
-						setSkillsCount(
-							([cl,res]) => [
-								//idx ? cl : cl + (val ? 1 : -1 ),
-								cl + (idx || val === switches[section][skill][0] ? 0 : val ? 1 : -1 ),
-								//idx ? res + (val ? 1 : -1) : res
-								res + (!idx || val === switches[section][skill][1] ? 0 : val ? 1 : -1)
-							]
-						);
-					} }
-				/>
-			</View>;
-		*/
 }
 
 function FooFoo(props) {
@@ -254,77 +108,6 @@ function FooFoo(props) {
 			</View>;
 }
 
-/*
-function Skills({ skills, switches, onSwitch }) {
-	const [selected, setSelected] = useState('');
-
-	const content = skills.map( sk => Object.fromEntries([
-		['nm', sk[0]],
-		['data', sk.slice(1)]
-	]) );
-
-	return (
-		<SectionList
-			sections={content}
-			renderItem={ props => props.section.nm !== selected ? null :
-				<SkillItem
-					{...props}
-					switches={switches[props.section.nm][props.item]}
-					onSwitch={ (idx, val) => onSwitch(props.section.nm, props.item, idx, val) }
-				/> }
-			renderSectionHeader={ ({section: {nm}}) =>
-				<SkillHeader
-					key={nm}
-					text={nm}
-					selected={nm === selected}
-					switches={switches[nm]}
-					onPress={ () => setSelected(selected === nm ? '' : nm) }
-					onSwitch={ (idx, val) => Object.keys(switches[nm]).forEach( key => onSwitch(nm, key, idx, val) ) }
-				/> }
-		/>
-	);
-}
-
-function SkillHeader({ text, selected, switches, onPress, onSwitch }) {
-	const [clCnt, resCnt, totalCnt] = Object.values(switches).reduce(
-		(acc, [cl,res]) => {
-			if (cl) acc[0]++;
-			if (res) acc[1]++;
-			acc[2]++;
-			return acc;
-		},
-		[0, 0, 0]
-	);
-
-	return (
-		<Pressable style={styles.skillHeader} onPress={onPress}>
-			<Text style={styles.skillHeaderTitle}>
-				{selected ? '\u261F' : '\u261E'}
-				&emsp;
-				{text}
-			</Text>
-			{ selected ?
-				<>
-				<Switch value={clCnt === totalCnt} onValueChange={ val => onSwitch(0, val) } />
-				<Switch value={resCnt === totalCnt} onValueChange={ val => onSwitch(1, val) } />
-				</> :
-				<Text style={styles.skillHeaderStat}>{`${totalCnt}>> ${clCnt} / ${resCnt}`}</Text>
-			}
-		</Pressable>
-	);
-}
-
-function SkillItem({ item, index, section, separators, switches, onSwitch }) {
-
-	return (
-		<View style={styles.skillItem}>
-			<Text style={styles.skillName}>{index + 1}.) {item ?? '--'}</Text>
-				<Switch value={switches[0]} onValueChange={ val => onSwitch(0, val) } />
-				<Switch value={switches[1]} onValueChange={ val => onSwitch(1, val) } />
-		</View>
-	);
-}
-*/
 //**************************************************************************************************\\
 //**************************************************************************************************\\
 /*
@@ -332,70 +115,7 @@ const styles = StyleSheet.create({
 	root: {
 		height: '100%'
 	},
-	genButton: {
-		marginHorizontal: 8,
-		marginVertical: 25
-	},
-	label: {
-		marginHorizontal: 8,
-		marginTop: 4
-	},
-	input: {
-		marginHorizontal: 8,
-		marginBottom: 4,
-		borderColor: 'blue',
-		borderWidth: 2,
-		borderRadius: 4
-	},
-	skillsSummary: {
-		alignSelf: 'flex-end',
-		marginTop: 20,
-		marginRight: 8,
-		marginBottom: 10,
-		display: 'flex',
-		flexDirection: 'row'
-	},
-	skillsSummaryText: {
-		fontSize: 22,
-		fontWeight: 'bold',
-		fontStyle: 'italic',
-		paddingVertical: 4,
-		paddingHorizontal: 16
-	},
-	skillHeader: {
-		backgroundColor: 'aquamarine',
-		borderColor: 'white',
-		borderWidth: 1,
-		padding: 5,
-		display: 'flex',
-		flexDirection: 'row'
-	},
-	skillHeaderTitle: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		flexGrow: 1
-	},
-	skillHeaderStat: {
-		fontSize: 18,
-		fontWeight: 'bold',
-		fontStyle: 'italic',
-		marginRight: 20
-	},
-	skillItem: {
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		borderColor: 'red',
-		borderWidth: 1,
-		backgroundColor: '#cf4',
-		paddingHorizontal: 6,
-		paddingVertical: 2
-	},
-	skillName: {
-		flexGrow: 1,
-		backgroundColor: 'yellow',
-		marginLeft: 6
-	}
+
 });
 */
 /**********************************************************************************************************\
