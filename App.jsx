@@ -21,6 +21,7 @@ import { Drawer } from 'react-native-drawer-layout';
 import RNFS from 'react-native-fs';
 
 import { ScreenGenerate } from './src/components/ScreenGenerate';
+import { ScreenEditor } from './src/components/ScreenEditor';
 
 
 //const MAX_SKILLS_SINGLE_COLUMN = 8;
@@ -124,6 +125,12 @@ export default function App() {
 						options={{ headerShown: false }}
 					>
 						{ props => <ScreenGenerate {...props} skills={skillList} /> }
+					</Stack.Screen>
+
+					<Stack.Screen
+						name="Editor"
+					>
+						{ props => <ScreenEditor {...props} /> }
 					</Stack.Screen>
 				</Stack.Navigator>
 			</Drawer>
