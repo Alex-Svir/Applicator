@@ -1,16 +1,21 @@
+import './gesture-handler';
+
 import React, { useState, useEffect } from 'react';
-/*import {
+import {
 	View,
-	SectionList,
-	Pressable,
+//	SectionList,
+//	Pressable,
 	Text,
-	TextInput,
-	Button,
-	Switch,
+//	TextInput,
+//	Button,
+//	Switch,
 	Alert,
 	StyleSheet
 } from 'react-native';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';*/
+//import RNHTMLtoPDF from 'react-native-html-to-pdf';
+
+import { Drawer } from 'react-native-drawer-layout';
+
 import RNFS from 'react-native-fs';
 
 import { ScreenGenerate } from './src/components/ScreenGenerate';
@@ -27,6 +32,7 @@ export default function App() {
 	const [skillList, setSkillList] = useState('');
 //	const [switches, setSwitches] = useState({});
 //	const [skillsCount, setSkillsCount] = useState([0,0]);
+	const [sideOpen, setSideOpen] = useState(false);
 
 /*
 	async function generatePdf() {
@@ -94,7 +100,22 @@ export default function App() {
 		[]
 	);
 
-	return <ScreenGenerate skills={skillList} />
+	return		<Drawer
+					open={sideOpen}
+					onOpen={ () => setSideOpen(true) }
+					onClose={ () => setSideOpen(false) }
+					renderDrawerContent={
+						() => { return <Text>I am a SuperDrawer!</Text>; }
+					}
+					drawerType="front"
+					drawerStyle={{backgroundColor: 'yellow'}}
+					swipeEdgeWidth={60}
+					swipeMinDistance={20} >
+					<ScreenGenerate
+						skills={skillList}
+					/>
+				</Drawer>
+
 
 
 	/*
