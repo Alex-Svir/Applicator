@@ -338,19 +338,54 @@ const styles = StyleSheet.create({
 \**********************************************************************************************************/
 
 const DEFAULT_SKILLS_FILE_CONTENT =
-`Titles
-C++
-Android
+`Languages
+C, C++
 Java
-JavaScript
 Assembly
-Microcontrollers
-ARM
-Arduino
+JavaScript
 HTML
+CSS
 XML
-Linux
+JSON
+Perl
 SQL
+
+Platforms
+Android
+Embedded software
+ARM
+Microcontrollers
+Arduino
+AWS
+Web services
+Mobile applications
+SQLite
+MySQL
+Linux
+Windows
+
+Frameworks
+React
+React-Native
+Node.js
+
+Titles
+OOP
+SDKs
+GitHub
+Git
+Eclipse
+Software development
+Software troubleshooting
+Debugging
+Unit Testing
+APIs
+Full-stack development
+Brainstorming
+Scripting
+Bash
+Shell Scripting
+S3
 
 Android
 Multi-threading
@@ -363,7 +398,7 @@ Screen Overlay
 
 C++
 Multi-threading
-Generics
+Templates
 Standard library
 
 Java
@@ -371,15 +406,21 @@ Multi-threading
 Generics
 SQL databases
 
-Soft
+Soft-skills
 Analytical thinking
+Analysis skills
+Critical thinking
 Strong work ethics
 Quick learning
-Detail oriented
-Critical thinking
+Detail-oriented
 Goal-oriented
 Experimenting
-Listening`;
+Listening
+
+Coming soon
+TypeScript
+Gradle
+Groovy`;
 
 const DEFAULT_COVER_LETTER_PARAMS = {
 	position: 'Entry-Level Software Developer',
