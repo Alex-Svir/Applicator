@@ -108,7 +108,7 @@ export default function App() {
 										},
 										[0,0]
 									);
-							if (clSkillsCnt !== skillsCount[0] || resSkillsCnt !== skillsCount[0]) {
+							if (clSkillsCnt !== skillsCount[0] || resSkillsCnt !== skillsCount[1]) {
 								setSkillsCount([ clSkillsCnt, resSkillsCnt ]);
 							}
 							if (clSkillsCnt >= MIN_COVER_LETTER_SKILLS && resSkillsCnt >= MIN_RESUME_SKILLS) {
