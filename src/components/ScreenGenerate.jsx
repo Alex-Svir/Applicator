@@ -8,8 +8,10 @@ import {
 	Button,
 	Switch,
 	Alert,
+//			ToastAndroid,
 	StyleSheet
 } from 'react-native';
+import { Drawer } from 'react-native-drawer-layout';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 //import RNFS from 'react-native-fs';
 
@@ -21,12 +23,14 @@ const MIN_COVER_LETTER_SKILLS = 5;
 const MIN_RESUME_SKILLS = 8;
 
 
-export function ScreenGenerate({ skills }) {
+export function ScreenGenerate({ skills, navigation, route }) {
 	const [company, setCompany] = useState('');
 	const [position, setPosition] = useState('');
 	const [skillsCount, setSkillsCount] = useState([0,0]);
 	const [skillList, setSkillList] = useState([]);
 	const [switches, setSwitches] = useState({});
+
+	const [sideOpen, setSideOpen] = useState(false);
 
 	useEffect(
 		() => {
@@ -107,7 +111,22 @@ export function ScreenGenerate({ skills }) {
 		[]
 	);
 */
-	return	<View
+	return (
+		<Drawer
+				open={sideOpen}
+				onOpen={ () => setSideOpen(true) }
+				onClose={ () => setSideOpen(false) }
+				renderDrawerContent={ () => {
+					return <SideBar onPress={ subj => {
+						setSideOpen(false);
+						navigation.navigate('Editor', {subj});
+					} } />;
+				} }
+			//	drawerStyle={styles.side}
+				swipeEdgeWidth={60}
+				swipeMinInstance={20}
+			>
+			<View
 				style={styles.root} >
 				<View
 					style={styles.genButton}>
@@ -204,9 +223,32 @@ export function ScreenGenerate({ skills }) {
 						);
 					} }
 				/>
+			</View>
+		</Drawer>
+	);
+}
+
+function SideBar({ onPress }) {
+	//console.log(props);
+	return	<View style={styles.side}>
+				<NaviButton label={'Skills'} onPress={ () => onPress('sk') } />
+				<NaviButton label={'Cover Letter'} onPress={ () => onPress('cl') } />
+				<NaviButton label={'Resume'} onPress={ () => onPress('res') } />
 			</View>;
 }
 
+function NaviButton({ label, onPress }) {
+
+	return (
+		<Pressable
+			style={{ ...styles.sideButton, display: 'flex', flexDirection: 'row' }}
+			onPress={onPress}
+		>
+			<Text>img</Text>
+			<Text>{label}</Text>
+		</Pressable>
+	);
+}
 
 function Skills({ skills, switches, onSwitch }) {
 	const [selected, setSelected] = useState('');
@@ -277,7 +319,6 @@ function SkillItem({ item, index, section, separators, switches, onSwitch }) {
 		</View>
 	);
 }
-
 //**************************************************************************************************\\
 //**************************************************************************************************\\
 
@@ -348,6 +389,20 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		backgroundColor: 'yellow',
 		marginLeft: 6
+	},
+	side: {
+		backgroundColor: 'yellow',
+		height: '100%',
+	//	width: '100%',
+		justifyContent: 'space-around',
+		alignItems: 'center'
+	},
+	sideButton: {
+		borderColor: 'navy',
+		borderWidth: 2,
+		width: '100%',
+	//	height: 60,
+		padding: 8
 	}
 });
 

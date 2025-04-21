@@ -15,7 +15,6 @@ import {
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Drawer } from 'react-native-drawer-layout';
 
 import RNFS from 'react-native-fs';
 
@@ -34,7 +33,6 @@ export default function App() {
 	const [skillList, setSkillList] = useState('');
 //	const [switches, setSwitches] = useState({});
 //	const [skillsCount, setSkillsCount] = useState([0,0]);
-	const [sideOpen, setSideOpen] = useState(false);
 
 	useEffect(
 		() => {
@@ -63,61 +61,29 @@ export default function App() {
 
 	return (
 		<NavigationContainer>
-			<Drawer
-				open={sideOpen}
-				onOpen={ () => setSideOpen(true) }
-				onClose={ () => setSideOpen(false) }
-				renderDrawerContent={
-					() => <Text>I am a SuperDrawer!</Text>
-				}
-				drawerType="front"
-				drawerStyle={{ backgroundColor: 'yellow' }}
-				swipeEdgeWidth={60}
-				swipeMinInstance={20}
-			>
 				<Stack.Navigator>
 					<Stack.Screen
 						name="Generate"
-						options={{ headerShown: false }}
-					>
+						options={{ headerShown: false }} >
 						{ props => <ScreenGenerate {...props} skills={skillList} /> }
 					</Stack.Screen>
 
 					<Stack.Screen
-						name="Editor"
-					>
+						name="Editor" >
 						{ props => <ScreenEditor {...props} /> }
 					</Stack.Screen>
 				</Stack.Navigator>
-			</Drawer>
 		</NavigationContainer>
 	);
 }
 
-function FooFoo(props) {
-
-	console.log(props);
-	console.log(props.route.params);
-
-	return	<View
-				style={{ width: 200, height: 200, backgroundColor: 'aqua' }}
-			>
-				<Text>
-					foo-foo-foo
-				</Text>
-			</View>;
-}
-
 //**************************************************************************************************\\
 //**************************************************************************************************\\
-/*
+
 const styles = StyleSheet.create({
-	root: {
-		height: '100%'
-	},
-
+//	root: { height: '100%' },
 });
-*/
+
 /**********************************************************************************************************\
  *
  *
