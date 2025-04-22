@@ -24,17 +24,8 @@ import { ScreenEditor } from './src/components/ScreenEditor';
 import { EditorContext } from './src/data/EditorContext';
 
 
-//const MAX_SKILLS_SINGLE_COLUMN = 8;
-//const MIN_COVER_LETTER_SKILLS = 5;
-//const MIN_RESUME_SKILLS = 8;
-
-
 export default function App() {
-//	const [company, setCompany] = useState('');
-//	const [position, setPosition] = useState('');
 	const [skillList, setSkillList] = useState('');
-//	const [switches, setSwitches] = useState({});
-//	const [skillsCount, setSkillsCount] = useState([0,0]);
 
 	useEffect(
 		() => {
@@ -63,7 +54,13 @@ export default function App() {
 
 	return (
 		<NavigationContainer>
-			<EditorContext value={{ cletter: 'Cover Letter content', resume: 'Resume content', skillList }}>
+			<EditorContext
+				value={{
+					cletter: 'Cover Letter content',
+					resume: 'Resume content',
+					skillList
+				}}
+			>
 				<Stack.Navigator>
 					<Stack.Screen
 						name="Generate"

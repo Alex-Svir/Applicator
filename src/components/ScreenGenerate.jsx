@@ -229,7 +229,6 @@ export function ScreenGenerate({ skills, navigation, route }) {
 }
 
 function SideBar({ onPress }) {
-	//console.log(props);
 	return	<View style={styles.side}>
 				<NaviButton label={'Skills'} onPress={ () => onPress('skillList') } />
 				<NaviButton label={'Cover Letter'} onPress={ () => onPress('cletter') } />
