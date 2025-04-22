@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
 	View,
-	Text,
+	TextInput,
 	StyleSheet
 } from 'react-native';
 
-export function ScreenEditor(props) {
-	console.log(props);
+import { EditorContext } from '../data/EditorContext';
+
+export function ScreenEditor({ navigation, route }) {
+	const { subj } = route.params;
+	const ctx = useContext(EditorContext);
+	const [text, setText] = useState( ctx[subj] );
+
+//	filedata.fname
+//	route.params.subj
 
 	return (
 		<View>
-			<Text>I am the Editor {props.route.params.subj}</Text>
+			<TextInput
+				multiline={true}
+				value={text}
+				onChangeText={txt => setText(txt)}
+			/>
 		</View>
 	);
 }

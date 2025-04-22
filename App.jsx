@@ -21,6 +21,8 @@ import RNFS from 'react-native-fs';
 import { ScreenGenerate } from './src/components/ScreenGenerate';
 import { ScreenEditor } from './src/components/ScreenEditor';
 
+import { EditorContext } from './src/data/EditorContext';
+
 
 //const MAX_SKILLS_SINGLE_COLUMN = 8;
 //const MIN_COVER_LETTER_SKILLS = 5;
@@ -61,6 +63,7 @@ export default function App() {
 
 	return (
 		<NavigationContainer>
+			<EditorContext value={{ cletter: 'Cover Letter content', resume: 'Resume content', skillList }}>
 				<Stack.Navigator>
 					<Stack.Screen
 						name="Generate"
@@ -69,10 +72,11 @@ export default function App() {
 					</Stack.Screen>
 
 					<Stack.Screen
-						name="Editor" >
-						{ props => <ScreenEditor {...props} /> }
-					</Stack.Screen>
+						name="Edit"
+						component={ ScreenEditor }
+					/>
 				</Stack.Navigator>
+			</EditorContext>
 		</NavigationContainer>
 	);
 }
@@ -88,6 +92,9 @@ const styles = StyleSheet.create({
  *
  *
 \**********************************************************************************************************/
+
+
+
 /*
 const DEFAULT_SKILLS_FILE_CONTENT =
 `Languages

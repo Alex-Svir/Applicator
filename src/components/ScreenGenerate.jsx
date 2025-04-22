@@ -119,7 +119,7 @@ export function ScreenGenerate({ skills, navigation, route }) {
 				renderDrawerContent={ () => {
 					return <SideBar onPress={ subj => {
 						setSideOpen(false);
-						navigation.navigate('Editor', {subj});
+						navigation.navigate('Edit', {subj});
 					} } />;
 				} }
 			//	drawerStyle={styles.side}
@@ -231,9 +231,9 @@ export function ScreenGenerate({ skills, navigation, route }) {
 function SideBar({ onPress }) {
 	//console.log(props);
 	return	<View style={styles.side}>
-				<NaviButton label={'Skills'} onPress={ () => onPress('sk') } />
-				<NaviButton label={'Cover Letter'} onPress={ () => onPress('cl') } />
-				<NaviButton label={'Resume'} onPress={ () => onPress('res') } />
+				<NaviButton label={'Skills'} onPress={ () => onPress('skillList') } />
+				<NaviButton label={'Cover Letter'} onPress={ () => onPress('cletter') } />
+				<NaviButton label={'Resume'} onPress={ () => onPress('resume') } />
 			</View>;
 }
 
