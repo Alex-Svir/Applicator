@@ -2,15 +2,7 @@ import './gesture-handler';
 
 import React, { useState, useEffect } from 'react';
 import {
-//	View,
-//	SectionList,
-//	Pressable,
-//	Text,
-//	TextInput,
-//	Button,
-//	Switch,
-//	Alert,
-		ToastAndroid,
+	ToastAndroid,
 	StyleSheet
 } from 'react-native';
 
@@ -64,22 +56,6 @@ export default function App() {
 	useEffect(
 		() => {
 			async function foo() {
-			/*
-				const path = RNFS.ExternalStorageDirectoryPath + '/Documents/Applicator/presets/skills.txt';
-				try {
-					const content = await RNFS.readFile(path);
-								setSkills(content.toString());
-
-				} catch(err) {
-					try {
-						const content = DEFAULT_SKILLS_FILE_CONTENT;
-						await RNFS.writeFile(path, content, 'utf8');
-								setSkills(content);
-					} catch (err) {
-						Alert.alert('Skills loading failed', err.message);
-					}
-				}
-			*/
 				const cl = await loadFile('cletter.txt', 'DEFAULT_COVER_LETTER_FILE_CONTENT');
 				if (typeof cl === 'string') setCletter(cl);
 				const res = await loadFile('resume.txt', 'DEFAULT_RESUME_FILE_CONTENT');
