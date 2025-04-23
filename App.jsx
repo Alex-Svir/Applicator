@@ -56,7 +56,7 @@ export default function App() {
 	useEffect(
 		() => {
 			async function foo() {
-				const cl = await loadFile('cletter.txt', 'DEFAULT_COVER_LETTER_FILE_CONTENT');
+				const cl = await loadFile('cletter.txt', DEFAULT_COVER_LETTER_FILE_CONTENT);
 				if (typeof cl === 'string') setCletter(cl);
 				const res = await loadFile('resume.txt', 'DEFAULT_RESUME_FILE_CONTENT');
 				if (typeof res === 'string') setResume(res);
@@ -129,6 +129,7 @@ HTML
 CSS
 XML
 JSON
+HTTP
 Perl
 SQL
 
@@ -138,6 +139,7 @@ Embedded software
 ARM
 Microcontrollers
 Arduino
+Apache2
 AWS
 Web services
 Mobile applications
@@ -281,35 +283,23 @@ function generateCoverLetter({ position, company, date, skills }) {
 	<br>
 	<p>Dear ${company} Team,</p>
 
-	<p>I was exited to find your posting for the position of ${position}.
-	My way is out of the ordinary, almost 20 years I have studied programming
-	by solving a wide  variety of practical problems. Each of my projects was
-	a challenge, I went step by step from easy things to more complicated ones,
-	so I was forced to resolve lots of minor problems on my way to my major goal.</p>
 
-	<p>Over time, my enthusiasm and thirst for learning did not fade, but only
-	intensified as I dove into computer science. Started with a simple curiosity,
-	my programming hobby has turned into a real passion and now my mind is
-	totally focused on it 24/7.</p>
+const DEFAULT_COVER_LETTER_FILE_CONTENT =
 
-	<p>When I cannot access my laptop, I read educational and tutorial
-	publications or books, search the ways of resolving my current
-	projects’ problems, analyze and plan my apps development. I never
-	remember my night-dreams but it seems they are all about coding too.</p>
+`I was exited to find your posting for the position of %%POSITION%%. My way is out of the ordinary, almost 20 years I have studied programming by solving a wide  variety of practical problems. Each of my projects was a challenge, I went step by step from easy things to more complicated ones, so I was forced to resolve lots of minor problems on my way to my major goal.
 
-	<p>During many years of programming I developed a lot of various applications,
-	mostly covering my current needs. So I experienced many experiments and learned
-	many APIs, interfaces and technologies e. g.:</p>
+Over time, my enthusiasm and thirst for learning did not fade, but only intensified as I dove into computer science. Started with a simple curiosity, my programming hobby has turned into a real passion and now my mind is totally focused on it 24/7.
 
-	<ul>${skills.map(li => '<li>' + li + '</li>').join('')}
-	</ul>
+When I cannot access my laptop, I read educational and tutorial publications or books, search the ways of resolving my current projects’ problems, analyze and plan my apps development. I never remember my night-dreams but it seems they are all about coding too.
 
-	<p>But at the same time, I have never thought this can become my occupation
-	or source of money. So, now it’s time to direct my passion and desire for
-	the benefit of humanity and ${company}.</p>
+During many years of programming I developed a lot of various applications, mostly covering my current needs. So I experienced many experiments and learned many APIs, interfaces and technologies e. g.:
 
-	<p>Can’t wait for instructions regarding my next steps from you! I’m eager
-	to direct my skills and passion to meet business needs.</p>
+%%SKILLS%%
+
+But at the same time, I have never thought this can become my occupation or source of money. So, now it’s time to direct my passion and desire for the benefit of humanity and %%COMPANY%%.
+
+Can’t wait for instructions regarding my next steps from you! I’m eager to direct my skills and passion to meet business needs.`;
+
 
 	<p>Sincerely,</p>
 	<p>${persconf.name}</p>

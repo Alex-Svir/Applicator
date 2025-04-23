@@ -26,7 +26,7 @@ const MIN_RESUME_SKILLS = 8;
 
 export function ScreenGenerate({ navigation, route }) {
 
-	const { skills } = useContext(EditorContext);
+	const { skills, cletter } = useContext(EditorContext);
 
 	const [company, setCompany] = useState('');
 	const [position, setPosition] = useState('');
@@ -55,6 +55,7 @@ export function ScreenGenerate({ navigation, route }) {
 		try {
 			const coverLetter = await RNHTMLtoPDF.convert({
 				html: generateCoverLetter({
+					pattern: cletter,
 					position,
 					company,
 					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
@@ -527,9 +528,29 @@ const DEFAULT_RESUME_PARAMS = {
 };
 
 
-function generateCoverLetter({ position, company, date, skills }) {
-	return `
-<html>
+function generateCoverLetter({ pattern, position, company, date, skills }) {
+
+	const substitution = pattern
+		//.trim()
+		.split(/\s*\n+\s*/)
+		.filter(p => p)
+		.map( p => {		//console.log(p);
+			if (p === '%%SKILLS%%') {
+				return `<ul>${skills.map(li => '<li>' + li + '</li>').join('')}</ul>`;
+			}
+
+			return `<p>${p.replace( /%%([A-Z]+)%%/g, (match, p1, offset, string) => {
+				switch (p1) {
+				case 'POSITION':	return position;
+				case 'COMPANY':		return company;
+				default:			return '';
+				}
+			} )}</p>`;
+		} )
+		.join('');
+
+
+	return `<html>
 <head>
 	<style>
 		body {
@@ -576,41 +597,12 @@ function generateCoverLetter({ position, company, date, skills }) {
 	<br>
 	<p>Dear ${company} Team,</p>
 
-	<p>I was exited to find your posting for the position of ${position}.
-	My way is out of the ordinary, almost 20 years I have studied programming
-	by solving a wide  variety of practical problems. Each of my projects was
-	a challenge, I went step by step from easy things to more complicated ones,
-	so I was forced to resolve lots of minor problems on my way to my major goal.</p>
-
-	<p>Over time, my enthusiasm and thirst for learning did not fade, but only
-	intensified as I dove into computer science. Started with a simple curiosity,
-	my programming hobby has turned into a real passion and now my mind is
-	totally focused on it 24/7.</p>
-
-	<p>When I cannot access my laptop, I read educational and tutorial
-	publications or books, search the ways of resolving my current
-	projects’ problems, analyze and plan my apps development. I never
-	remember my night-dreams but it seems they are all about coding too.</p>
-
-	<p>During many years of programming I developed a lot of various applications,
-	mostly covering my current needs. So I experienced many experiments and learned
-	many APIs, interfaces and technologies e. g.:</p>
-
-	<ul>${skills.map(li => '<li>' + li + '</li>').join('')}
-	</ul>
-
-	<p>But at the same time, I have never thought this can become my occupation
-	or source of money. So, now it’s time to direct my passion and desire for
-	the benefit of humanity and ${company}.</p>
-
-	<p>Can’t wait for instructions regarding my next steps from you! I’m eager
-	to direct my skills and passion to meet business needs.</p>
+	${substitution}
 
 	<p>Sincerely,</p>
 	<p>${persconf.name}</p>
 </body>
-</html>
-	`;
+</html>`;
 }
 
 function generateResume({ position, skills, certificates }) {
