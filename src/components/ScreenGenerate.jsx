@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
 	View,
 	SectionList,
@@ -16,6 +16,7 @@ import RNHTMLtoPDF from 'react-native-html-to-pdf';
 //import RNFS from 'react-native-fs';
 
 import { persconf } from '../../persconfig';
+import { EditorContext } from '../data/EditorContext';
 
 
 const MAX_SKILLS_SINGLE_COLUMN = 8;
@@ -23,7 +24,10 @@ const MIN_COVER_LETTER_SKILLS = 5;
 const MIN_RESUME_SKILLS = 8;
 
 
-export function ScreenGenerate({ skills, navigation, route }) {
+export function ScreenGenerate({ navigation, route }) {
+
+	const { skills } = useContext(EditorContext);
+
 	const [company, setCompany] = useState('');
 	const [position, setPosition] = useState('');
 	const [skillsCount, setSkillsCount] = useState([0,0]);
@@ -230,7 +234,7 @@ export function ScreenGenerate({ skills, navigation, route }) {
 
 function SideBar({ onPress }) {
 	return	<View style={styles.side}>
-				<NaviButton label={'Skills'} onPress={ () => onPress('skillList') } />
+				<NaviButton label={'Skills'} onPress={ () => onPress('skills') } />
 				<NaviButton label={'Cover Letter'} onPress={ () => onPress('cletter') } />
 				<NaviButton label={'Resume'} onPress={ () => onPress('resume') } />
 			</View>;
