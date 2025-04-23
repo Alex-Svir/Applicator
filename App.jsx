@@ -2,14 +2,15 @@ import './gesture-handler';
 
 import React, { useState, useEffect } from 'react';
 import {
-	View,
+//	View,
 //	SectionList,
 //	Pressable,
-	Text,
+//	Text,
 //	TextInput,
 //	Button,
 //	Switch,
-	Alert,
+//	Alert,
+		ToastAndroid,
 	StyleSheet
 } from 'react-native';
 
@@ -24,26 +25,67 @@ import { ScreenEditor } from './src/components/ScreenEditor';
 import { EditorContext } from './src/data/EditorContext';
 
 
+const APP_DIR_PATH = '/Documents/Applicator/';
+const PRESETS_PATH = APP_DIR_PATH + 'presets/';
+
+async function loadFile(fname, defaultContent) {
+	const path = RNFS.ExternalStorageDirectoryPath + PRESETS_PATH + fname;
+	try {
+		const content = await RNFS.readFile(path);
+		return content.toString();
+	} catch (err) {
+		try {
+			await RNFS.writeFile(path, defaultContent, 'utf8');
+			return defaultContent;
+		} catch (err) {
+			ToastAndroid.show(`Failed loading ${fname}\n${err.message}`, ToastAndroid.LONG);
+			return null;
+		}
+	}
+}
+
+async function saveFile(fname, content) {
+	const path = RNFS.ExternalStorageDirectoryPath + PRESETS_PATH + fname;
+	try {
+		await RNFS.writeFile(path, content, 'utf8');
+		return true;
+	} catch (err) {
+		ToastAndroid.show(`Failed saving ${fname}\n${err.message}`, ToastAndroid.LONG);
+		return false;
+	}
+}
+
+
 export default function App() {
-	const [skillList, setSkillList] = useState('');
+	const [cletter, setCletter] = useState('');
+	const [resume, setResume] = useState('');
+	const [skills, setSkills] = useState('');
 
 	useEffect(
 		() => {
 			async function foo() {
+			/*
 				const path = RNFS.ExternalStorageDirectoryPath + '/Documents/Applicator/presets/skills.txt';
 				try {
 					const content = await RNFS.readFile(path);
-								setSkillList(content.toString());
+								setSkills(content.toString());
 
 				} catch(err) {
 					try {
 						const content = DEFAULT_SKILLS_FILE_CONTENT;
 						await RNFS.writeFile(path, content, 'utf8');
-								setSkillList(content);
+								setSkills(content);
 					} catch (err) {
 						Alert.alert('Skills loading failed', err.message);
 					}
 				}
+			*/
+				const cl = await loadFile('cletter.txt', 'DEFAULT_COVER_LETTER_FILE_CONTENT');
+				if (typeof cl === 'string') setCletter(cl);
+				const res = await loadFile('resume.txt', 'DEFAULT_RESUME_FILE_CONTENT');
+				if (typeof res === 'string') setResume(res);
+				const sk = await loadFile('skills.txt', DEFAULT_SKILLS_FILE_CONTENT);
+				if (typeof sk === 'string') setSkills(sk);
 			};
 			foo();
 		},
@@ -56,17 +98,26 @@ export default function App() {
 		<NavigationContainer>
 			<EditorContext
 				value={{
-					cletter: 'Cover Letter content',
-					resume: 'Resume content',
-					skillList
+					cletter,
+					resume,
+					skills,
+					onSave: (subj, content) => {
+						if (!saveFile(subj + '.txt', content)) return;
+						switch(subj) {
+							case 'skills':	setSkills(content);		return;
+							case 'cletter':	setCletter(content);	return;
+							case 'resume':	setResume(content);		return;
+							default: throw new Error('Unacceptable subject');
+						}
+					}
 				}}
 			>
 				<Stack.Navigator>
 					<Stack.Screen
 						name="Generate"
-						options={{ headerShown: false }} >
-						{ props => <ScreenGenerate {...props} skills={skillList} /> }
-					</Stack.Screen>
+						component={ ScreenGenerate }
+						options={{ headerShown: false }}
+					/>
 
 					<Stack.Screen
 						name="Edit"
@@ -92,7 +143,6 @@ const styles = StyleSheet.create({
 
 
 
-/*
 const DEFAULT_SKILLS_FILE_CONTENT =
 `Languages
 C, C++
@@ -177,7 +227,7 @@ Coming soon
 TypeScript
 Gradle
 Groovy`;
-
+/*
 const DEFAULT_COVER_LETTER_PARAMS = {
 	position: 'Entry-Level Software Developer',
 	company: 'Company',
