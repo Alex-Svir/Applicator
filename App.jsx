@@ -306,7 +306,7 @@ During many years of programming, I developed a lot of various applications, mos
 
 %%SKILLS%%
 
-But at the same time, I have never thought this could become my occupation or source of money. So, now it’s time to direct my passion and desire for the benefit of humanity and %%COMPANY%%.
+But at the same time, I have never thought this could become my occupation or source of money. So, now it’s time to direct my passion and desire for the benefit of humanity and %%COMPANY_SELF%%.
 
 Can’t wait for instructions regarding my next steps from you! I’m eager to direct my skills and passion to meet business needs.`;
 

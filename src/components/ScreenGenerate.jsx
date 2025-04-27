@@ -30,6 +30,7 @@ export function ScreenGenerate({ navigation, route }) {
 
 	const [company, setCompany] = useState('');
 	const [position, setPosition] = useState('');
+	const [shortPosition, setShortPosition] = useState('');
 	const [skillsCount, setSkillsCount] = useState([0,0]);
 	const [skillList, setSkillList] = useState([]);
 	const [switches, setSwitches] = useState({});
@@ -57,7 +58,9 @@ export function ScreenGenerate({ navigation, route }) {
 				html: generateCoverLetter({
 					pattern: cletter,
 					position,
+					shortPosition,
 					company,
+					isRecruiter: false,
 					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
 					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
 				}),
@@ -68,6 +71,7 @@ export function ScreenGenerate({ navigation, route }) {
 				html: generateResume({
 					...DEFAULT_RESUME_PARAMS,
 					position,
+					shortPosition,
 					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => res).map(([key, val]) => key) )
 				}),
 				fileName: 'Resume',
@@ -157,7 +161,10 @@ export function ScreenGenerate({ navigation, route }) {
 								Alert.alert("Not enough skills", "Select some more skills");
 							}
 						} }
-						disabled={!company || !position || skillsCount[0] < MIN_COVER_LETTER_SKILLS || skillsCount[1] < MIN_RESUME_SKILLS}
+						disabled={ !company || !position || !shortPosition
+									|| skillsCount[0] < MIN_COVER_LETTER_SKILLS
+									|| skillsCount[1] < MIN_RESUME_SKILLS
+						}
 					/>
 				</View>
 				<Text style={styles.label}>Company</Text>
@@ -172,6 +179,17 @@ export function ScreenGenerate({ navigation, route }) {
 					value={position}
 					placeholder={'Position'}
 					onChangeText={ txt => setPosition(txt) } />
+
+				<View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}>
+					<Text>Short:</Text>
+					<TextInput
+						style={{ flexGrow: 1, borderColor: 'blue', borderWidth: 2, borderRadius: 4, marginHorizontal: 8 }}
+						value={shortPosition}
+						onChangeText={ txt => setShortPosition(txt) } />
+					<Button
+						title="ret"
+						onPress={ () => setShortPosition(position) } />
+				</View>
 
 				<View style={styles.skillsSummary}>
 					<Pressable
@@ -528,7 +546,7 @@ const DEFAULT_RESUME_PARAMS = {
 };
 
 
-function generateCoverLetter({ pattern, position, company, date, skills }) {
+function generateCoverLetter({ pattern, position, shortPosition, company, isRecruiter, date, skills }) {
 
 	const substitution = pattern
 		//.trim()
@@ -541,9 +559,12 @@ function generateCoverLetter({ pattern, position, company, date, skills }) {
 
 			return `<p>${p.replace( /%%([A-Z]+)%%/g, (match, p1, offset, string) => {
 				switch (p1) {
-				case 'POSITION':	return position;
-				case 'COMPANY':		return company;
-				default:			return '';
+				case 'POSITION':		return position;
+				case 'COMPANY':			return company;
+				case 'POSITION_SHORT':	return shortPosition;
+				case 'COMPANY_SELF':	return isRecruiter ? 'company' : company;
+
+				default:				return '';
 				}
 			} )}</p>`;
 		} )
@@ -605,7 +626,7 @@ function generateCoverLetter({ pattern, position, company, date, skills }) {
 </html>`;
 }
 
-function generateResume({ position, skills, certificates }) {
+function generateResume({ position, shortPosition, skills, certificates }) {
 	return `
 <html>
 <head>
@@ -636,7 +657,7 @@ function generateResume({ position, skills, certificates }) {
 	<p class="hdr"><a href="https://github.com/${persconf.github}">https://github.com/${persconf.github}</a></p>
 	<br>
 
-	<p>Enthusiastic, dependable, motivated ${position} with strong practical
+	<p>Enthusiastic, dependable, motivated ${shortPosition} with strong practical
 	background and great passion to coding. Spent 15+ years learning computer science,
 	high- and low-level programming languages, frameworks, platforms,
 	computer-related technologies, interfaces, and never stop developing, even when sleeping.
