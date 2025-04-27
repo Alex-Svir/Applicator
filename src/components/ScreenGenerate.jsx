@@ -29,6 +29,7 @@ export function ScreenGenerate({ navigation, route }) {
 	const { skills, cletter } = useContext(EditorContext);
 
 	const [company, setCompany] = useState('');
+	const [isRecruiter, setIsRecruiter] = useState(true);
 	const [position, setPosition] = useState('');
 	const [shortPosition, setShortPosition] = useState('');
 	const [skillsCount, setSkillsCount] = useState([0,0]);
@@ -60,7 +61,7 @@ export function ScreenGenerate({ navigation, route }) {
 					position,
 					shortPosition,
 					company,
-					isRecruiter: false,
+					isRecruiter,
 					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
 					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
 				}),
@@ -173,6 +174,14 @@ export function ScreenGenerate({ navigation, route }) {
 					value={company}
 					placeholder={'Company Name'}
 					onChangeText={ txt => setCompany(txt) } />
+
+				<View style={[styles.row, { justifyContent: 'flex-end' }]}>
+					<Text>Is recryiter</Text>
+					<Switch
+						value={isRecruiter}
+						onValueChange={ val => setIsRecruiter(val) } />
+				</View>
+
 				<Text style={styles.label}>Position</Text>
 				<TextInput
 					style={styles.input}
@@ -180,7 +189,7 @@ export function ScreenGenerate({ navigation, route }) {
 					placeholder={'Position'}
 					onChangeText={ txt => setPosition(txt) } />
 
-				<View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}>
+				<View style={styles.row}>
 					<Text>Short:</Text>
 					<TextInput
 						style={{ flexGrow: 1, borderColor: 'blue', borderWidth: 2, borderRadius: 4, marginHorizontal: 8 }}
@@ -346,7 +355,8 @@ function SkillItem({ item, index, section, separators, switches, onSwitch }) {
 
 const styles = StyleSheet.create({
 	root: {
-		height: '100%'
+		height: '100%',
+		//padding: 8
 	},
 	genButton: {
 		marginHorizontal: 8,
@@ -362,6 +372,12 @@ const styles = StyleSheet.create({
 		borderColor: 'blue',
 		borderWidth: 2,
 		borderRadius: 4
+	},
+	row: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginHorizontal: 8
 	},
 	skillsSummary: {
 		alignSelf: 'flex-end',
