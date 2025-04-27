@@ -3,6 +3,7 @@ import './gesture-handler';
 import React, { useState, useEffect } from 'react';
 import {
 	ToastAndroid,
+	Alert,
 	StyleSheet
 } from 'react-native';
 
@@ -28,11 +29,11 @@ async function loadFile(fname, defaultContent) {
 	} catch (err) {
 		try {
 			await RNFS.writeFile(path, defaultContent, 'utf8');
-			return defaultContent;
 		} catch (err) {
 			ToastAndroid.show(`Failed loading ${fname}\n${err.message}`, ToastAndroid.LONG);
-			return null;
+			Alert.alert(`Failed loading ${fname}\n${err.message}`);
 		}
+		return defaultContent;
 	}
 }
 
@@ -43,6 +44,7 @@ async function saveFile(fname, content) {
 		return true;
 	} catch (err) {
 		ToastAndroid.show(`Failed saving ${fname}\n${err.message}`, ToastAndroid.LONG);
+		Alert.alert(`Failed saving ${fname}\n${err.message}`);
 		return false;
 	}
 }
@@ -57,11 +59,11 @@ export default function App() {
 		() => {
 			async function foo() {
 				const cl = await loadFile('cletter.txt', DEFAULT_COVER_LETTER_FILE_CONTENT);
-				if (typeof cl === 'string') setCletter(cl);
+				/*if (typeof cl === 'string')*/ setCletter(cl);
 				const res = await loadFile('resume.txt', 'DEFAULT_RESUME_FILE_CONTENT');
-				if (typeof res === 'string') setResume(res);
+				/*if (typeof res === 'string')*/ setResume(res);
 				const sk = await loadFile('skills.txt', DEFAULT_SKILLS_FILE_CONTENT);
-				if (typeof sk === 'string') setSkills(sk);
+				/*if (typeof sk === 'string')*/ setSkills(sk);
 			};
 			foo();
 		},
@@ -153,6 +155,9 @@ React
 React-Native
 Node.js
 
+Tools
+Docker
+
 Titles
 OOP
 SDKs
@@ -203,6 +208,7 @@ Listening
 
 Coming soon
 TypeScript
+PHP
 Gradle
 Groovy`;
 /*
@@ -286,17 +292,21 @@ function generateCoverLetter({ position, company, date, skills }) {
 
 const DEFAULT_COVER_LETTER_FILE_CONTENT =
 
-`I was exited to find your posting for the position of %%POSITION%%. My way is out of the ordinary, almost 20 years I have studied programming by solving a wide  variety of practical problems. Each of my projects was a challenge, I went step by step from easy things to more complicated ones, so I was forced to resolve lots of minor problems on my way to my major goal.
+`I was excited to find your posting for the position of %%POSITION%%. I have an unusual path behind and a great path ahead! For more than 15 years, I have studied programming by solving a wide  variety of practical problems.
 
-Over time, my enthusiasm and thirst for learning did not fade, but only intensified as I dove into computer science. Started with a simple curiosity, my programming hobby has turned into a real passion and now my mind is totally focused on it 24/7.
+I had no access to a PC until 17 years old. At that time, I had my exams to enter a university. Within a year after a PC appeared in my household, curiosity pushed me to start my programming experiments. I learned C++ and Java, writing small apps for Windows and JavaME (smartphones were not widely used yet). Each of my projects was a challenge, I went step by step from easy things to more complicated ones, so I was forced to resolve lots of minor problems on my way to my major goal. Leak of academical approach is compensated with my thirst for knowledge and close attention to details. Diving deeply into a problem, discovering all and every aspects of it lead to comprehensive knowledge of the problem.
 
-When I cannot access my laptop, I read educational and tutorial publications or books, search the ways of resolving my current projects’ problems, analyze and plan my apps development. I never remember my night-dreams but it seems they are all about coding too.
+A couple of years later, I got my first own laptop. Initially, there was no OS on it. First, I installed FreeDOS, and Linux was the next. I never chose a simple way. I state a problem and then resolve it, so this is my way to keep learning all the time.
 
-During many years of programming I developed a lot of various applications, mostly covering my current needs. So I experienced many experiments and learned many APIs, interfaces and technologies e. g.:
+Over time, my enthusiasm and thirst for learning did not fade, but only intensified as I dove into computer science. Started with a simple curiosity, my programming hobby has turned into a real passion, and now my mind is totally focused on it 24/7.
+
+When I can not access my laptop, I'm still developing. I read educational and tutorial publications or books, search the ways of resolving my current projects’ problems, analyze and plan my apps development, write sketches on my smartphone or tablet, solve minor side problems. I never remember my night-dreams, but it seems they are all about coding, too.
+
+During many years of programming, I developed a lot of various applications, mostly aiming at learning or covering my current needs. Most of my projects were wrappers for my desire to learn some particular feature. So I experienced many experiments and learned many APIs, interfaces and technologies e. g.:
 
 %%SKILLS%%
 
-But at the same time, I have never thought this can become my occupation or source of money. So, now it’s time to direct my passion and desire for the benefit of humanity and %%COMPANY%%.
+But at the same time, I have never thought this could become my occupation or source of money. So, now it’s time to direct my passion and desire for the benefit of humanity and %%COMPANY%%.
 
 Can’t wait for instructions regarding my next steps from you! I’m eager to direct my skills and passion to meet business needs.`;
 
