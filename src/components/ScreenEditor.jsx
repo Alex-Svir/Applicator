@@ -31,7 +31,7 @@ export function ScreenEditor({ navigation, route }) {
 					</Pressable>
 				)
 		}),
-			[navigation, text, subj, ctx]
+			[navigation, text, subj, ctx[subj]]
 	);
 
 	return (
