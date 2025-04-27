@@ -292,9 +292,9 @@ function generateCoverLetter({ position, company, date, skills }) {
 
 const DEFAULT_COVER_LETTER_FILE_CONTENT =
 
-`I was excited to find your posting for the position of %%POSITION%%. I have an unusual path behind and a great path ahead! For more than 15 years, I have studied programming by solving a wide  variety of practical problems.
+`I was excited to find your posting for the position of %%POSITION%%. I have an unusual path behind and a great path ahead! For more than 15 years, I have studied programming by solving a wide variety of practical problems.
 
-I had no access to a PC until 17 years old. At that time, I had my exams to enter a university. Within a year after a PC appeared in my household, curiosity pushed me to start my programming experiments. I learned C++ and Java, writing small apps for Windows and JavaME (smartphones were not widely used yet). Each of my projects was a challenge, I went step by step from easy things to more complicated ones, so I was forced to resolve lots of minor problems on my way to my major goal. Leak of academical approach is compensated with my thirst for knowledge and close attention to details. Diving deeply into a problem, discovering all and every aspects of it lead to comprehensive knowledge of the problem.
+I had no access to a PC until 17 years old. At that time, I passed my exams to enter a university. Within a year after a PC appeared in my household, curiosity pushed me to start my programming experiments. I learned C++ and Java, writing small apps for Windows and JavaME (smartphones were not widely used yet). Each of my projects was a challenge, I went step by step from easy things to more complicated ones, so I was forced to resolve lots of minor problems on my way to my major goal. Leak of academical approach is compensated with my thirst for knowledge and close attention to details. Diving deeply into a problem, discovering all and every aspect of it, lead to comprehensive knowledge of the problem.
 
 A couple of years later, I got my first own laptop. Initially, there was no OS on it. First, I installed FreeDOS, and Linux was the next. I never chose a simple way. I state a problem and then resolve it, so this is my way to keep learning all the time.
 

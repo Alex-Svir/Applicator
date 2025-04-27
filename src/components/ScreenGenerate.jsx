@@ -19,7 +19,8 @@ import { persconf } from '../../persconfig';
 import { EditorContext } from '../data/EditorContext';
 
 
-const MAX_SKILLS_SINGLE_COLUMN = 8;
+const MAX_SKILLS_SINGLE_COLUMN_RESUME = 8;
+const MAX_SKILLS_SINGLE_COLUMN_CLETTER = 5;
 const MIN_COVER_LETTER_SKILLS = 5;
 const MIN_RESUME_SKILLS = 8;
 
@@ -607,6 +608,9 @@ function generateCoverLetter({ pattern, position, shortPosition, company, isRecr
 			font-weight: normal;
 			width: 15ch;
 		}
+		ul {
+			columns: ${skills.length > MAX_SKILLS_SINGLE_COLUMN_CLETTER ? 2 : 1};
+		}
 	</style>
 </head>
 <body>
@@ -660,7 +664,7 @@ function generateResume({ position, shortPosition, skills, certificates }) {
 			margin-bottom: 0.5em;
 		}
 		ul.skill {
-			columns: ${skills.length > MAX_SKILLS_SINGLE_COLUMN ? 2 : 1};
+			columns: ${skills.length > MAX_SKILLS_SINGLE_COLUMN_RESUME ? 2 : 1};
 		}
 	</style>
 </head>
