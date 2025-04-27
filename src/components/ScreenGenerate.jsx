@@ -636,31 +636,28 @@ function generateResume({ position, skills, certificates }) {
 	<p class="hdr"><a href="https://github.com/${persconf.github}">https://github.com/${persconf.github}</a></p>
 	<br>
 
-	<p>Enthusiastic, motivated, self-educated ${position} with strong practical
-	background and great passion to coding. Spent almost 20 years learning C++,
-	Java, Android and never stop developing, even when sleeping. Eager to direct
-	my skills and passion to meet business needs.</p>
+	<p>Enthusiastic, dependable, motivated ${position} with strong practical
+	background and great passion to coding. Spent 15+ years learning computer science,
+	high- and low-level programming languages, frameworks, platforms,
+	computer-related technologies, interfaces, and never stop developing, even when sleeping.
+	Eager to direct my skills and passion to meet business needs.</p>
 
 	<h2>Education</h2>
-
-	<ul>Self education based on:
-		<li>Almost 20 years of learning, developing, experimenting, investigating computer technologies</li>
-    	<li>1000s hours of coding, debugging, fixing errors, resolving compiling problems</li>
-    	<li>Great practical experience in C++, Android, Java</li>
-    </ul>
 
 	<ul>Belarusian State Medical University
 		<li>2005 – 2011</li>
 	</ul>
 
+	<ul>Self education based on:
+		<li>15+ years of learning, developing, experimenting, investigating computer technologies</li>
+    	<li>1,000s hours of coding, debugging, fixing errors, resolving compiling problems</li>
+    	<li>1,000,000s lines of code in C++, Java, HTML, JavaScript, CSS, XML, Perl</li>
+    	<li>Great practical experience developing for Windows, Linux, Android, ARM, Web</li>
+    </ul>
+
 	<h2>Skills</h2>
 	<ul class="skill">
 		${skills.map( li => '<li>' + li + '</li>' ).join('')}
-	</ul>
-
-	<h2>Certification</h2>
-	<ul>
-		${certificates.map( li => '<li>' + li + '</li>' ).join('')}
 	</ul>
 
 	<h2>Languages</h2>
