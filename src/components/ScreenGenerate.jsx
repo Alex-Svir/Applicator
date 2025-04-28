@@ -20,7 +20,7 @@ import { EditorContext } from '../data/EditorContext';
 
 
 const MAX_SKILLS_SINGLE_COLUMN_RESUME = 8;
-const MAX_SKILLS_SINGLE_COLUMN_CLETTER = 5;
+const MAX_SKILLS_SINGLE_COLUMN_CLETTER = 6;
 const MIN_COVER_LETTER_SKILLS = 5;
 const MIN_RESUME_SKILLS = 8;
 
@@ -574,7 +574,7 @@ function generateCoverLetter({ pattern, position, shortPosition, company, isRecr
 				return `<ul>${skills.map(li => '<li>' + li + '</li>').join('')}</ul>`;
 			}
 
-			return `<p>${p.replace( /%%([A-Z]+)%%/g, (match, p1, offset, string) => {
+			return `<p>${p.replace( /%%([A-Z_]+)%%/g, (match, p1, offset, string) => {
 				switch (p1) {
 				case 'POSITION':		return position;
 				case 'COMPANY':			return company;
