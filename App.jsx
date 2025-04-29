@@ -18,8 +18,9 @@ import { ScreenEditor } from './src/components/ScreenEditor';
 import { EditorContext } from './src/data/EditorContext';
 
 
-const APP_DIR_PATH = '/Documents/Applicator/';
+export const APP_DIR_PATH = '/Documents/Applicator/';
 const PRESETS_PATH = APP_DIR_PATH + 'presets/';
+export const ARCHIVE_PATH = APP_DIR_PATH + 'archive/';
 
 async function loadFile(fname, defaultContent) {
 	const path = RNFS.ExternalStorageDirectoryPath + PRESETS_PATH + fname;

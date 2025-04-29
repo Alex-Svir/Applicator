@@ -13,11 +13,12 @@ import {
 } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-//import RNFS from 'react-native-fs';
+import RNFS from 'react-native-fs';
 
 import { persconf } from '../../persconfig';
 import { EditorContext } from '../data/EditorContext';
 
+import { APP_DIR_PATH, ARCHIVE_PATH } from '../../App.jsx';
 
 const MAX_SKILLS_SINGLE_COLUMN_RESUME = 8;
 const MAX_SKILLS_SINGLE_COLUMN_CLETTER = 6;
@@ -56,6 +57,13 @@ export function ScreenGenerate({ navigation, route }) {
 
 	async function generatePdf() {
 		try {
+			const path = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'meta.txt';
+			await RNFS.writeFile(
+				path,
+				position + '\n' + company + '\n' + genTimestamp(),
+				'utf8'
+			);
+
 			const coverLetter = await RNHTMLtoPDF.convert({
 				html: generateCoverLetter({
 					pattern: cletter,
@@ -122,16 +130,34 @@ export function ScreenGenerate({ navigation, route }) {
 		[]
 	);
 */
+
+	function reset() {
+		setCompany('');
+		setIsRecruiter(true);
+		setPosition('');
+		setShortPosition('');
+	}
+
 	return (
 		<Drawer
 				open={sideOpen}
 				onOpen={ () => setSideOpen(true) }
 				onClose={ () => setSideOpen(false) }
 				renderDrawerContent={ () => {
-					return <SideBar onPress={ subj => {
-						setSideOpen(false);
-						navigation.navigate('Edit', {subj});
-					} } />;
+					return <SideBar
+								onNavigate={ subj => {
+									setSideOpen(false);
+									navigation.navigate('Edit', {subj});
+								} }
+								onArchivate={ () => {
+									setSideOpen(false);
+									archivate();
+									reset();
+								} }
+								onReset={ () => {
+									setSideOpen(false);
+									reset();
+								} } />;
 				} }
 			//	drawerStyle={styles.side}
 				swipeEdgeWidth={60}
@@ -177,7 +203,7 @@ export function ScreenGenerate({ navigation, route }) {
 					onChangeText={ txt => setCompany(txt) } />
 
 				<View style={[styles.row, { justifyContent: 'flex-end' }]}>
-					<Text>Is recryiter</Text>
+					<Text>Is recruiter</Text>
 					<Switch
 						value={isRecruiter}
 						onValueChange={ val => setIsRecruiter(val) } />
@@ -261,11 +287,47 @@ export function ScreenGenerate({ navigation, route }) {
 	);
 }
 
-function SideBar({ onPress }) {
+async function archivate() {
+	let pos = 'Position';
+	let cny = 'Company';
+	let tms = genTimestamp();
+
+	const appDirPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH;
+
+	try {
+		const content = await RNFS.readFile(appDirPath + 'meta.txt');
+		[pos, cny, tms] = content.split('\n');
+	} catch (err) {
+		console.log('ERROR reading metadata', err.message);
+	}
+
+	const archivePath = RNFS.ExternalStorageDirectoryPath + ARCHIVE_PATH + tms + '/';
+
+	try {
+		await RNFS.mkdir(archivePath);
+
+		try { await RNFS.moveFile(appDirPath + 'Resume.pdf', archivePath + 'Resume.pdf'); }
+		catch (err) { console.log('ERROR moving Resume.pdf', err.message); }
+
+		try { await RNFS.moveFile(appDirPath + 'CoverLetter.pdf', archivePath + 'CoverLetter.pdf'); }
+		catch (err) { console.log('ERROR moving CoverLetter.pdf', err.message); }
+
+		try { await RNFS.moveFile(appDirPath + 'meta.txt', archivePath + `${pos}_@_${cny}.txt`); }
+		catch (err) { console.log('ERROR moving meta.txt', err.message); }
+	} catch (err) {
+		console.log('ERROR making archive subdir', err.message);
+	}
+}
+
+
+function SideBar({ onNavigate, onArchivate, onReset }) {
 	return	<View style={styles.side}>
-				<NaviButton label={'Skills'} onPress={ () => onPress('skills') } />
-				<NaviButton label={'Cover Letter'} onPress={ () => onPress('cletter') } />
-				<NaviButton label={'Resume'} onPress={ () => onPress('resume') } />
+				<Button title="Archivate" onPress={ () => onArchivate() } />
+				<Button title="Reset" onPress={ () => onReset() } />
+
+				<NaviButton label={'Skills'} onPress={ () => onNavigate('skills') } />
+				<NaviButton label={'Cover Letter'} onPress={ () => onNavigate('cletter') } />
+				<NaviButton label={'Resume'} onPress={ () => onNavigate('resume') } />
 			</View>;
 }
 
@@ -449,6 +511,20 @@ const styles = StyleSheet.create({
  *
  *
 \**********************************************************************************************************/
+function genTimestamp() {
+	const expand = x => x < 10 ? '0' + x : x;
+
+	const now = new Date();
+
+	const year = now.getFullYear();
+	const month = expand(now.getMonth() + 1);
+	const day = expand(now.getDate());
+	const hour = expand(now.getHours());
+	const min = expand(now.getMinutes());
+	const sec = expand(now.getSeconds());
+
+	return `${year}${month}${day}_${hour}${min}${sec}`;
+}
 /*
 const DEFAULT_SKILLS_FILE_CONTENT =
 `Languages
