@@ -223,7 +223,7 @@ export function ScreenGenerate({ navigation, route }) {
 						value={shortPosition}
 						onChangeText={ txt => setShortPosition(txt) } />
 					<Button
-						title="ret"
+						title="cp"
 						onPress={ () => setShortPosition(position) } />
 				</View>
 
@@ -237,7 +237,10 @@ export function ScreenGenerate({ navigation, route }) {
 							).join('\n')
 						)} >
 						<Text
-							style={styles.skillsSummaryText}>
+							style={ [
+								styles.skillsSummaryText,
+								skillsCount[0] < MIN_COVER_LETTER_SKILLS ? { color: 'red' } : undefined
+							] }>
 							{skillsCount[0]}
 						</Text>
 					</Pressable>
@@ -250,7 +253,10 @@ export function ScreenGenerate({ navigation, route }) {
 							).join('\n')
 						)} >
 						<Text
-							style={styles.skillsSummaryText}>
+							style={ [
+								styles.skillsSummaryText,
+								skillsCount[1] < MIN_RESUME_SKILLS ? { color: 'red' } : undefined
+							] }>
 							{skillsCount[1]}
 						</Text>
 					</Pressable>
