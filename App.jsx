@@ -155,9 +155,6 @@ React
 React-Native
 Node.js
 
-Tools
-Docker
-
 Titles
 OOP
 SDKs
@@ -175,6 +172,9 @@ Scripting
 Bash
 Shell Scripting
 S3
+
+Tools
+Docker
 
 Android
 Multi-threading
