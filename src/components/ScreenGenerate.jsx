@@ -57,9 +57,9 @@ export function ScreenGenerate({ navigation, route }) {
 
 	async function generatePdf() {
 		try {
-			const path = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'meta.txt';
+			const fileMetaPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'meta.txt';
 			await RNFS.writeFile(
-				path,
+				fileMetaPath,
 				position + '\n' + company + '\n' + genTimestamp(),
 				'utf8'
 			);
@@ -87,7 +87,22 @@ export function ScreenGenerate({ navigation, route }) {
 				fileName: 'Resume',
 				directory: 'Applicator'
 			});
-			Alert.alert('Generated PDF', `Saved at\n\n${coverLetter.filePath}\n\n${resume.filePath}`);
+
+			const fileCLetterTxtPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'CoverLetter.txt';
+			await RNFS.writeFile(
+				fileCLetterTxtPath,
+				genCoverLetterTxt({
+					pattern: cletter,
+					position,
+					shortPosition,
+					company,
+					isRecruiter,
+					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
+				}),
+				'utf8'
+			);
+
+			Alert.alert('Generated PDF', `Saved at\n\n${coverLetter.filePath}\n\n${resume.filePath}\n\n${fileCLetterTxtPath}`);
 		} catch(err) {
 			Alert.alert('ERROR', err.message);
 		}
@@ -657,6 +672,19 @@ const DEFAULT_RESUME_PARAMS = {
 	]
 };
 
+function genCoverLetterTxt({ pattern, position, shortPosition, company, isRecruiter, skills }) {
+	return pattern.replace(/%%([A-Z_]+)%%/g, (match, p1, offset, string) => {
+		switch (p1) {
+		case 'POSITION':		return position;
+		case 'COMPANY':			return company;
+		case 'POSITION_SHORT':	return shortPosition;
+		case 'COMPANY_SELF':	return isRecruiter ? 'company' : company;
+		case 'SKILLS':			return skills.join(', ');
+		default:				return '';
+		}
+	});
+}
+
 
 function generateCoverLetter({ pattern, position, shortPosition, company, isRecruiter, date, skills }) {
 
@@ -731,7 +759,6 @@ function generateCoverLetter({ pattern, position, shortPosition, company, isRecr
 	<br>
 	<p>Brighton,&emsp;&emsp;${date}</p>
 	<br>
-	<p>Dear ${company} Team,</p>
 
 	${substitution}
 
