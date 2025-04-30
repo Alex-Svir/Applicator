@@ -328,23 +328,35 @@ async function archivate() {
 
 function SideBar({ onNavigate, onArchivate, onReset }) {
 	return	<View style={styles.side}>
-				<Button title="Archivate" onPress={ () => onArchivate() } />
-				<Button title="Reset" onPress={ () => onReset() } />
+				<ActButton label="Archivate" onPress={ () => onArchivate() } />
+				<ActButton label="Reset" onPress={ () => onReset() } />
 
-				<NaviButton label={'Skills'} onPress={ () => onNavigate('skills') } />
-				<NaviButton label={'Cover Letter'} onPress={ () => onNavigate('cletter') } />
-				<NaviButton label={'Resume'} onPress={ () => onNavigate('resume') } />
+				<View style={{ height: 0, borderWidth:0.5, borderColor: 'grey', width: '75%', marginVertical: 30 }} />
+
+				<NaviButton label='Skills' onPress={ () => onNavigate('skills') } />
+				<NaviButton label='Cover Letter' onPress={ () => onNavigate('cletter') } />
+				<NaviButton label='Resume' onPress={ () => onNavigate('resume') } />
 			</View>;
 }
 
 function NaviButton({ label, onPress }) {
-
 	return (
 		<Pressable
-			style={{ ...styles.sideButton, display: 'flex', flexDirection: 'row' }}
+			style={[ styles.sideButton, { display: 'flex', flexDirection: 'row', justifyContent: 'center' } ]}
 			onPress={onPress}
 		>
 			<Text>img</Text>
+			<Text>{label}</Text>
+		</Pressable>
+	);
+}
+
+function ActButton({ label, onPress }) {
+	return (
+		<Pressable
+			style={styles.sideButton}
+			onPress={onPress}
+		>
 			<Text>{label}</Text>
 		</Pressable>
 	);
@@ -498,18 +510,19 @@ const styles = StyleSheet.create({
 		marginLeft: 6
 	},
 	side: {
-		backgroundColor: 'yellow',
 		height: '100%',
 	//	width: '100%',
-		justifyContent: 'space-around',
+		justifyContent: 'center',
 		alignItems: 'center'
 	},
 	sideButton: {
 		borderColor: 'navy',
 		borderWidth: 2,
-		width: '100%',
+		borderRadius: 6,
+		width: '90%',
 	//	height: 60,
-		padding: 8
+		padding: 8,
+		marginVertical: 16
 	}
 });
 
