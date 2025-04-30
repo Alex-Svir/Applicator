@@ -151,6 +151,20 @@ export function ScreenGenerate({ navigation, route }) {
 		setIsRecruiter(true);
 		setPosition('');
 		setShortPosition('');
+
+		setSwitches(
+			Object.fromEntries(
+				Object.entries(switches).map(
+					([key, val]) => [
+						key,
+						Object.fromEntries(
+							Object.keys(val).map( k => [k, [false, false]] )
+						)
+					]
+				)
+			)
+		);
+		setSkillsCount([0,0]);
 	}
 
 	return (
@@ -343,8 +357,8 @@ async function archivate() {
 
 function SideBar({ onNavigate, onArchivate, onReset }) {
 	return	<View style={styles.side}>
-				<ActButton label="Archivate" onPress={ () => onArchivate() } />
 				<ActButton label="Reset" onPress={ () => onReset() } />
+				<ActButton label="Archivate" onPress={ () => onArchivate() } />
 
 				<View style={{ height: 0, borderWidth:0.5, borderColor: 'grey', width: '75%', marginVertical: 30 }} />
 
