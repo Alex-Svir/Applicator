@@ -128,6 +128,7 @@ C, C++
 Java
 Assembly
 JavaScript
+TypeScript
 HTML
 CSS
 XML
@@ -146,6 +147,7 @@ Apache2
 AWS
 Web services
 Mobile applications
+Docker
 SQLite
 MySQL
 Linux
@@ -161,6 +163,7 @@ OOP
 SDKs
 GitHub
 Git
+Version Control
 Eclipse
 Software development
 Software troubleshooting
@@ -172,9 +175,6 @@ Scripting
 Bash
 Shell Scripting
 S3
-
-Tools
-Docker
 
 Android
 Multi-threading
@@ -208,7 +208,6 @@ Experimenting
 Listening
 
 Coming soon
-TypeScript
 PHP
 Gradle
 Groovy`;

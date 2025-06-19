@@ -689,6 +689,12 @@ const DEFAULT_RESUME_PARAMS = {
 	]
 };
 
+
+
+//**************************************************************************/
+//**************************************************************************/
+//**************************************************************************/
+//**************************************************************************/
 function genCoverLetterTxt({ pattern, position, shortPosition, company, isRecruiter, skills }) {
 	return pattern.replace(/%%([A-Z_]+)%%/g, (match, p1, offset, string) => {
 		switch (p1) {
@@ -703,6 +709,10 @@ function genCoverLetterTxt({ pattern, position, shortPosition, company, isRecrui
 }
 
 
+//**************************************************************************/
+//**************************************************************************/
+//**************************************************************************/
+//**************************************************************************/
 function generateCoverLetter({ pattern, position, shortPosition, company, isRecruiter, date, skills }) {
 
 	const substitution = pattern
@@ -785,6 +795,11 @@ function generateCoverLetter({ pattern, position, shortPosition, company, isRecr
 </html>`;
 }
 
+
+//**************************************************************************/
+//**************************************************************************/
+//**************************************************************************/
+//**************************************************************************/
 function generateResume({ position, shortPosition, skills, certificates }) {
 	return `
 <html>
@@ -793,7 +808,7 @@ function generateResume({ position, shortPosition, skills, certificates }) {
 		body {
 			width: 8.5in;
 			height: 11in;
-			padding: 0.79in;
+			/*padding: 0.79in;*/
 		}
 		h1,p.hdr {
 			margin: 0;
@@ -804,6 +819,15 @@ function generateResume({ position, shortPosition, skills, certificates }) {
 		}
 		ul.skill {
 			columns: ${skills.length > MAX_SKILLS_SINGLE_COLUMN_RESUME ? 2 : 1};
+		}
+		ul li {
+			margin-top: 0.3em;
+		}
+		ul.exp li {
+			margin-top: 0.7em;
+		}
+		@page {
+			margin: 0.79in;
 		}
 	</style>
 </head>
@@ -828,12 +852,26 @@ function generateResume({ position, shortPosition, skills, certificates }) {
 		<li>2005 – 2011</li>
 	</ul>
 
-	<ul>Self education based on:
+	<ul class="edu">Self education based on:
 		<li>15+ years of learning, developing, experimenting, investigating computer technologies</li>
     	<li>1,000s hours of coding, debugging, fixing errors, resolving compiling problems</li>
     	<li>1,000,000s lines of code in C++, Java, HTML, JavaScript, CSS, XML, Perl</li>
     	<li>Great practical experience developing for Windows, Linux, Android, ARM, Web</li>
     </ul>
+
+	<h2>Experience</h2>
+	<ul class="exp">
+		<li>Android organizer application by my friend physician's request that assists him in logging his working performance
+		(Room Library, custom RecyclerView LayoutManager, custom View)</li>
+
+		<li>Custom STM32 library written in C++: RCC, GPIO, UART, I2C, SPI, USB</li>
+
+		<li>Electronic drum kit (Arduino, UART, C++, MIDI)</li>
+
+		<li>Twister game referee with build-in music player (Borland C++ Builder, DirectSound API)</li>
+
+		<li>Telegram Bots (Telegram Bot API, AWS Lambda)</li>
+	</ul>
 
 	<h2>Skills</h2>
 	<ul class="skill">
@@ -845,6 +883,7 @@ function generateResume({ position, shortPosition, skills, certificates }) {
 		<li>English</li>
 		<li>Belarusian</li>
 		<li>Russian</li>
+		<li>Polish</li>
     </ul>
 </body>
 </html>
