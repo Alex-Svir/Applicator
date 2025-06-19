@@ -347,6 +347,9 @@ async function archivate() {
 		try { await RNFS.moveFile(appDirPath + 'CoverLetter.pdf', archivePath + 'CoverLetter.pdf'); }
 		catch (err) { console.log('ERROR moving CoverLetter.pdf', err.message); }
 
+		try { await RNFS.moveFile(appDirPath + 'CoverLetter.txt', archivePath + 'CoverLetter.txt'); }
+		catch (err) { console.log('ERROR moving CoverLetter.txt', err.message); }
+
 		try { await RNFS.moveFile(appDirPath + 'meta.txt', archivePath + `${pos}_@_${cny}.txt`); }
 		catch (err) { console.log('ERROR moving meta.txt', err.message); }
 	} catch (err) {
