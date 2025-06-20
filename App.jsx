@@ -12,7 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import RNFS from 'react-native-fs';
 
-import { ScreenGenerate } from './src/components/ScreenGenerate';
+import { ScreenGenerateTabbed as ScreenGenerate } from './src/components/ScreenGenerate';
 import { ScreenEditor } from './src/components/ScreenEditor';
 
 import { EditorContext } from './src/data/EditorContext';

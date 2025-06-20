@@ -12,11 +12,13 @@ import {
 	StyleSheet
 } from 'react-native';
 import { Drawer } from 'react-native-drawer-layout';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 
 import { persconf } from '../../persconfig';
 import { EditorContext } from '../data/EditorContext';
+import { GeneratorDataProvider, useGeneratorData, useGeneratorDispatch } from '../data/GeneratorContext.js';
 
 import { APP_DIR_PATH, ARCHIVE_PATH } from '../../App.jsx';
 
@@ -321,6 +323,312 @@ export function ScreenGenerate({ navigation, route }) {
 		</Drawer>
 	);
 }
+
+/*******************************************************************************************************/
+/*******************************************************************************************************/
+/*******************************************************************************************************/
+/*******************************************************************************************************/
+/*******************************************************************************************************/
+const Tab = createBottomTabNavigator();
+
+export function ScreenGenerateTabbed({ navigation, route }) {
+
+	const { skills, cletter } = useContext(EditorContext);
+
+//	const [company, setCompany] = useState('');
+//	const [isRecruiter, setIsRecruiter] = useState(true);
+//	const [position, setPosition] = useState('');
+//	const [shortPosition, setShortPosition] = useState('');
+	const [skillsCount, setSkillsCount] = useState([0,0]);
+	const [skillList, setSkillList] = useState([]);
+	const [switches, setSwitches] = useState({});
+
+	const [sideOpen, setSideOpen] = useState(false);
+
+	useEffect(
+		() => {
+			const arr = skills.split(/\n{2,}/).filter(d => d)
+									.map( d => d.split('\n').filter(i => i) );
+			const sw = Object.fromEntries(
+				arr.map( a => [ a[0], Object.fromEntries(
+					a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
+				) ] )
+			);
+			setSkillList(arr);
+			setSwitches(sw);
+		},
+		[skills]
+	 );
+
+	async function generatePdf() {
+		try {
+			const fileMetaPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'meta.txt';
+			await RNFS.writeFile(
+				fileMetaPath,
+				position + '\n' + company + '\n' + genTimestamp(),
+				'utf8'
+			);
+
+			const coverLetter = await RNHTMLtoPDF.convert({
+				html: generateCoverLetter({
+					pattern: cletter,
+					position,
+					shortPosition,
+					company,
+					isRecruiter,
+					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
+				}),
+				fileName: 'CoverLetter',
+				directory: 'Applicator'
+			});
+			const resume = await RNHTMLtoPDF.convert({
+				html: generateResume({
+					...DEFAULT_RESUME_PARAMS,
+					position,
+					shortPosition,
+					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => res).map(([key, val]) => key) )
+				}),
+				fileName: 'Resume',
+				directory: 'Applicator'
+			});
+
+			const fileCLetterTxtPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'CoverLetter.txt';
+			await RNFS.writeFile(
+				fileCLetterTxtPath,
+				genCoverLetterTxt({
+					pattern: cletter,
+					position,
+					shortPosition,
+					company,
+					isRecruiter,
+					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
+				}),
+				'utf8'
+			);
+
+			Alert.alert('Generated PDF', `Saved at\n\n${coverLetter.filePath}\n\n${resume.filePath}\n\n${fileCLetterTxtPath}`);
+		} catch(err) {
+			Alert.alert('ERROR', err.message);
+		}
+	}
+
+	function reset() {
+		setCompany('');
+		setIsRecruiter(true);
+		setPosition('');
+		setShortPosition('');
+
+		setSwitches(
+			Object.fromEntries(
+				Object.entries(switches).map(
+					([key, val]) => [
+						key,
+						Object.fromEntries(
+							Object.keys(val).map( k => [k, [false, false]] )
+						)
+					]
+				)
+			)
+		);
+		setSkillsCount([0,0]);
+	}
+
+	return (
+		<Drawer
+				open={sideOpen}
+				onOpen={ () => setSideOpen(true) }
+				onClose={ () => setSideOpen(false) }
+				renderDrawerContent={ () => {
+					return <SideBar
+								onNavigate={ subj => {
+									setSideOpen(false);
+									navigation.navigate('Edit', {subj});
+								} }
+								onArchivate={ () => {
+									setSideOpen(false);
+									archivate();
+									reset();
+								} }
+								onReset={ () => {
+									setSideOpen(false);
+									reset();
+								} } />;
+				} }
+			//	drawerStyle={styles.side}
+				swipeEdgeWidth={60}
+				swipeMinInstance={20}
+			>
+			<GeneratorDataProvider>
+				<Tab.Navigator>
+					<Tab.Screen name='A' component={A} />
+					<Tab.Screen name='B' component={B} />
+				</Tab.Navigator>
+			</GeneratorDataProvider>
+		</Drawer>
+	);
+}
+
+function A() {
+	const data = useGeneratorData();
+	const dispatch = useGeneratorDispatch();
+
+	return (
+		<View>
+			<Text style={styles.label}>Company</Text>
+			<TextInput
+				style={styles.input}
+				value={data.company}
+				placeholder={'Company Name'}
+				onChangeText={ text => dispatch({ type: 'company', text }) } />
+
+			<View style={[styles.row, { justifyContent: 'flex-end' }]}>
+				<Text>Is recruiter</Text>
+				<Switch
+					value={data.isRecruiter}
+					onValueChange={ val => dispatch({ type: 'recruiter', is: val }) } />
+			</View>
+
+			<Text style={styles.label}>Position</Text>
+			<TextInput
+				style={styles.input}
+				value={data.position}
+				placeholder={'Position'}
+				onChangeText={ text => dispatch({ type: 'position', text }) } />
+
+			<View style={styles.row}>
+				<Text>Short:</Text>
+				<TextInput
+					style={{ flexGrow: 1, borderColor: 'blue', borderWidth: 2, borderRadius: 4, marginHorizontal: 8 }}
+					value={data.shortPosition}
+					onChangeText={ text => dispatch({ type: 'shortpos', text }) } />
+				<Button
+					title="cp"
+					onPress={ () => dispatch({ type: 'shortpos', text: null }) } />
+			</View>
+		</View>
+	);
+}
+
+function B() {
+	return (
+		<View>
+			<Text>BBBBBBBBBBBB</Text>
+		</View>
+	);
+}
+
+/*
+			<View
+				style={styles.root} >
+				<View
+					style={styles.genButton}>
+					<Button
+						title="GENERATE"
+						onPress={ () => {
+							const [clSkillsCnt, resSkillsCnt] = Object.values(switches)
+									.flatMap( sect => Object.values(sect) )
+									.reduce(
+										(acc, [cl, res]) => {
+											if (cl) acc[0]++;
+											if (res) acc[1]++;
+											return acc;
+										},
+										[0,0]
+									);
+							if (clSkillsCnt !== skillsCount[0] || resSkillsCnt !== skillsCount[1]) {
+								setSkillsCount([ clSkillsCnt, resSkillsCnt ]);
+							}
+							if (clSkillsCnt >= MIN_COVER_LETTER_SKILLS && resSkillsCnt >= MIN_RESUME_SKILLS) {
+								generatePdf();
+							} else {
+								Alert.alert("Not enough skills", "Select some more skills");
+							}
+						} }
+						disabled={ !company || !position || !shortPosition
+									|| skillsCount[0] < MIN_COVER_LETTER_SKILLS
+									|| skillsCount[1] < MIN_RESUME_SKILLS
+						}
+					/>
+				</View>
+
+
+
+
+
+
+
+
+				
+				<View style={styles.skillsSummary}>
+					<Pressable
+						onPress={() => Alert.alert(
+							'Cover Letter skills:',
+							skillList.flatMap(
+								sec => sec.filter( (sk, i) => i > 0 )
+										.filter( sk => switches[sec[0]][sk][0] )
+							).join('\n')
+						)} >
+						<Text
+							style={ [
+								styles.skillsSummaryText,
+								skillsCount[0] < MIN_COVER_LETTER_SKILLS ? { color: 'red' } : undefined
+							] }>
+							{skillsCount[0]}
+						</Text>
+					</Pressable>
+					<Pressable
+						onPress={() => Alert.alert(
+							'Resume skills:',
+							skillList.flatMap(
+								sec => sec.filter( (sk, i) => i > 0 )
+										.filter( sk => switches[sec[0]][sk][1] )
+							).join('\n')
+						)} >
+						<Text
+							style={ [
+								styles.skillsSummaryText,
+								skillsCount[1] < MIN_RESUME_SKILLS ? { color: 'red' } : undefined
+							] }>
+							{skillsCount[1]}
+						</Text>
+					</Pressable>
+				</View>
+
+				<Skills
+					skills={skillList}
+					switches={switches}
+					onSwitch={ (section, skill, idx, val) => {
+						setSwitches(
+							sw => ({
+								...sw,
+								[section]: {
+									...sw[section],
+									[skill]: [
+										idx ? sw[section][skill][0] : val,
+										idx ? val : sw[section][skill][1]
+									]
+								}
+							})
+						);
+						setSkillsCount(
+							([cl,res]) => [
+								//idx ? cl : cl + (val ? 1 : -1 ),
+								cl + (idx || val === switches[section][skill][0] ? 0 : val ? 1 : -1 ),
+								//idx ? res + (val ? 1 : -1) : res
+								res + (!idx || val === switches[section][skill][1] ? 0 : val ? 1 : -1)
+							]
+						);
+					} }
+				/>
+			</View>
+*/
+
+
+/*******************************************************************************************************/
+/*******************************************************************************************************/
+/*******************************************************************************************************/
+/*******************************************************************************************************/
 
 async function archivate() {
 	let pos = 'Position';
