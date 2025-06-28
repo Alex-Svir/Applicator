@@ -332,110 +332,12 @@ export function ScreenGenerate({ navigation, route }) {
 const Tab = createBottomTabNavigator();
 
 export function ScreenGenerateTabbed({ navigation, route }) {
-
-	const { skills, cletter } = useContext(EditorContext);
-
-//	const [company, setCompany] = useState('');
-//	const [isRecruiter, setIsRecruiter] = useState(true);
-//	const [position, setPosition] = useState('');
-//	const [shortPosition, setShortPosition] = useState('');
-	const [skillsCount, setSkillsCount] = useState([0,0]);
-	const [skillList, setSkillList] = useState([]);
-	const [switches, setSwitches] = useState({});
-
+	//const { skills: skillsString, cletter } = useContext(EditorContext);
 	const [sideOpen, setSideOpen] = useState(false);
 
-	useEffect(
-		() => {
-			const arr = skills.split(/\n{2,}/).filter(d => d)
-									.map( d => d.split('\n').filter(i => i) );
-			const sw = Object.fromEntries(
-				arr.map( a => [ a[0], Object.fromEntries(
-					a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
-				) ] )
-			);
-			setSkillList(arr);
-			setSwitches(sw);
-		},
-		[skills]
-	 );
-
-	async function generatePdf() {
-		try {
-			const fileMetaPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'meta.txt';
-			await RNFS.writeFile(
-				fileMetaPath,
-				position + '\n' + company + '\n' + genTimestamp(),
-				'utf8'
-			);
-
-			const coverLetter = await RNHTMLtoPDF.convert({
-				html: generateCoverLetter({
-					pattern: cletter,
-					position,
-					shortPosition,
-					company,
-					isRecruiter,
-					date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
-				}),
-				fileName: 'CoverLetter',
-				directory: 'Applicator'
-			});
-			const resume = await RNHTMLtoPDF.convert({
-				html: generateResume({
-					...DEFAULT_RESUME_PARAMS,
-					position,
-					shortPosition,
-					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => res).map(([key, val]) => key) )
-				}),
-				fileName: 'Resume',
-				directory: 'Applicator'
-			});
-
-			const fileCLetterTxtPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'CoverLetter.txt';
-			await RNFS.writeFile(
-				fileCLetterTxtPath,
-				genCoverLetterTxt({
-					pattern: cletter,
-					position,
-					shortPosition,
-					company,
-					isRecruiter,
-					skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
-				}),
-				'utf8'
-			);
-
-			Alert.alert('Generated PDF', `Saved at\n\n${coverLetter.filePath}\n\n${resume.filePath}\n\n${fileCLetterTxtPath}`);
-		} catch(err) {
-			Alert.alert('ERROR', err.message);
-		}
-	}
-
-	function reset() {
-		setCompany('');
-		setIsRecruiter(true);
-		setPosition('');
-		setShortPosition('');
-
-		setSwitches(
-			Object.fromEntries(
-				Object.entries(switches).map(
-					([key, val]) => [
-						key,
-						Object.fromEntries(
-							Object.keys(val).map( k => [k, [false, false]] )
-						)
-					]
-				)
-			)
-		);
-		setSkillsCount([0,0]);
-	}
-
 	return (
-		<Drawer
+		<GeneratorDataProvider>
+			<Drawer
 				open={sideOpen}
 				onOpen={ () => setSideOpen(true) }
 				onClose={ () => setSideOpen(false) }
@@ -448,24 +350,24 @@ export function ScreenGenerateTabbed({ navigation, route }) {
 								onArchivate={ () => {
 									setSideOpen(false);
 									archivate();
-									reset();
+									//reset();
 								} }
 								onReset={ () => {
 									setSideOpen(false);
-									reset();
+									//reset();
 								} } />;
 				} }
 			//	drawerStyle={styles.side}
 				swipeEdgeWidth={60}
 				swipeMinInstance={20}
 			>
-			<GeneratorDataProvider>
 				<Tab.Navigator>
 					<Tab.Screen name='A' component={A} />
 					<Tab.Screen name='B' component={B} />
+					<Tab.Screen name='C' component={C} />
 				</Tab.Navigator>
-			</GeneratorDataProvider>
-		</Drawer>
+			</Drawer>
+		</GeneratorDataProvider>
 	);
 }
 
@@ -511,118 +413,175 @@ function A() {
 }
 
 function B() {
+	const data = useGeneratorData();
+	const dispatch = useGeneratorDispatch();
+	const { skills: skillsString } = useContext(EditorContext);
+
+	useEffect(
+		() => {
+			const arr = skillsString.split(/\n{2,}/).filter(d => d)
+									.map( d => d.split('\n').filter(i => i) );
+			const sw = Object.fromEntries(
+				arr.map( a => [ a[0], Object.fromEntries(
+					a.filter((x,i) => i > 0).map( b => [b, [false, false]] )
+				) ] )
+			);
+			dispatch({
+				type: 'skillsSetup',
+				array: arr,
+				switches: sw
+			});
+		},
+		[skillsString]
+	);
+
 	return (
 		<View>
-			<Text>BBBBBBBBBBBB</Text>
+			<View style={styles.skillsSummary}>
+				<Pressable
+					onPress={() => Alert.alert(
+						'Cover Letter skills:',
+						data.skillsArray.flatMap(
+							section => section.filter( (skill, i) => i > 0 )
+									.filter( skill => data.skillsSwitches[section[0]][skill][0] )
+						).join('\n')
+					)} >
+					<Text
+						style={ [
+							styles.skillsSummaryText,
+							data.skillsCount[0] < MIN_COVER_LETTER_SKILLS ? { color: 'red' } : undefined
+						] }>
+						{data.skillsCount[0]}
+					</Text>
+				</Pressable>
+				<Pressable
+					onPress={() => Alert.alert(
+						'Resume skills:',
+						data.skillsArray.flatMap(
+							section => section.filter( (skill, i) => i > 0 )
+									.filter( skill => data.skillsSwitches[section[0]][skill][1] )
+						).join('\n')
+					)} >
+					<Text
+						style={ [
+							styles.skillsSummaryText,
+							data.skillsCount[1] < MIN_RESUME_SKILLS ? { color: 'red' } : undefined
+						] }>
+						{data.skillsCount[1]}
+					</Text>
+				</Pressable>
+			</View>
+
+			<Skills
+				skills={data.skillsArray}
+				switches={data.skillsSwitches}
+				onSwitch={ (section, skill, idx, val) => dispatch( {
+						type: 'switched',
+						section,
+						skill,
+						idx,
+						val
+					} )
+				}
+			/>
 		</View>
 	);
 }
 
-/*
+function C() {
+	const data = useGeneratorData();
+	const dispatch = useGeneratorDispatch();
+	const { cletter } = useContext(EditorContext);
+
+	return (
+		<View
+			style={styles.root} >
 			<View
-				style={styles.root} >
-				<View
-					style={styles.genButton}>
-					<Button
-						title="GENERATE"
-						onPress={ () => {
-							const [clSkillsCnt, resSkillsCnt] = Object.values(switches)
-									.flatMap( sect => Object.values(sect) )
-									.reduce(
-										(acc, [cl, res]) => {
-											if (cl) acc[0]++;
-											if (res) acc[1]++;
-											return acc;
-										},
-										[0,0]
-									);
-							if (clSkillsCnt !== skillsCount[0] || resSkillsCnt !== skillsCount[1]) {
-								setSkillsCount([ clSkillsCnt, resSkillsCnt ]);
-							}
-							if (clSkillsCnt >= MIN_COVER_LETTER_SKILLS && resSkillsCnt >= MIN_RESUME_SKILLS) {
-								generatePdf();
-							} else {
-								Alert.alert("Not enough skills", "Select some more skills");
-							}
-						} }
-						disabled={ !company || !position || !shortPosition
-									|| skillsCount[0] < MIN_COVER_LETTER_SKILLS
-									|| skillsCount[1] < MIN_RESUME_SKILLS
+				style={styles.genButton}>
+				<Button
+					title="GENERATE"
+					onPress={ () => {
+						const [clSkillsCnt, resSkillsCnt] = Object.values(data.skillsSwitches)
+								.flatMap( sect => Object.values(sect) )
+								.reduce(
+									(acc, [cl, res]) => {
+										if (cl) acc[0]++;
+										if (res) acc[1]++;
+										return acc;
+									},
+									[0,0]
+								);
+						if (clSkillsCnt !== data.skillsCount[0] || resSkillsCnt !== data.skillsCount[1]) {
+							dispatch({ type: 'skillscnt', value: [clSkillsCnt, resSkillsCnt] });
 						}
-					/>
-				</View>
-
-
-
-
-
-
-
-
-				
-				<View style={styles.skillsSummary}>
-					<Pressable
-						onPress={() => Alert.alert(
-							'Cover Letter skills:',
-							skillList.flatMap(
-								sec => sec.filter( (sk, i) => i > 0 )
-										.filter( sk => switches[sec[0]][sk][0] )
-							).join('\n')
-						)} >
-						<Text
-							style={ [
-								styles.skillsSummaryText,
-								skillsCount[0] < MIN_COVER_LETTER_SKILLS ? { color: 'red' } : undefined
-							] }>
-							{skillsCount[0]}
-						</Text>
-					</Pressable>
-					<Pressable
-						onPress={() => Alert.alert(
-							'Resume skills:',
-							skillList.flatMap(
-								sec => sec.filter( (sk, i) => i > 0 )
-										.filter( sk => switches[sec[0]][sk][1] )
-							).join('\n')
-						)} >
-						<Text
-							style={ [
-								styles.skillsSummaryText,
-								skillsCount[1] < MIN_RESUME_SKILLS ? { color: 'red' } : undefined
-							] }>
-							{skillsCount[1]}
-						</Text>
-					</Pressable>
-				</View>
-
-				<Skills
-					skills={skillList}
-					switches={switches}
-					onSwitch={ (section, skill, idx, val) => {
-						setSwitches(
-							sw => ({
-								...sw,
-								[section]: {
-									...sw[section],
-									[skill]: [
-										idx ? sw[section][skill][0] : val,
-										idx ? val : sw[section][skill][1]
-									]
-								}
-							})
-						);
-						setSkillsCount(
-							([cl,res]) => [
-								//idx ? cl : cl + (val ? 1 : -1 ),
-								cl + (idx || val === switches[section][skill][0] ? 0 : val ? 1 : -1 ),
-								//idx ? res + (val ? 1 : -1) : res
-								res + (!idx || val === switches[section][skill][1] ? 0 : val ? 1 : -1)
-							]
-						);
+						if (clSkillsCnt >= MIN_COVER_LETTER_SKILLS && resSkillsCnt >= MIN_RESUME_SKILLS) {
+							generatePdf(cletter, data.company, data.position, data.shortPosition, data.isRecruiter, data.skillsSwitches);
+						} else {
+							Alert.alert("Not enough skills", "Select some more skills");
+						}
 					} }
+					disabled={ !data.company || !data.position || !data.shortPosition
+								|| data.skillsCount[0] < MIN_COVER_LETTER_SKILLS
+								|| data.skillsCount[1] < MIN_RESUME_SKILLS
+					}
 				/>
 			</View>
-*/
+		</View>
+	);
+}
+
+async function generatePdf(cletter, company, position, shortPosition, isRecruiter, switches) {
+	try {
+		const fileMetaPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'meta.txt';
+		await RNFS.writeFile(
+			fileMetaPath,
+			position + '\n' + company + '\n' + genTimestamp(),
+			'utf8'
+		);
+
+		const coverLetter = await RNHTMLtoPDF.convert({
+			html: generateCoverLetter({
+				pattern: cletter,
+				position,
+				shortPosition,
+				company,
+				isRecruiter,
+				date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+				skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
+			}),
+			fileName: 'CoverLetter',
+			directory: 'Applicator'
+		});
+		const resume = await RNHTMLtoPDF.convert({
+			html: generateResume({
+				...DEFAULT_RESUME_PARAMS,
+				position,
+				shortPosition,
+				skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => res).map(([key, val]) => key) )
+			}),
+			fileName: 'Resume',
+			directory: 'Applicator'
+		});
+
+		const fileCLetterTxtPath = RNFS.ExternalStorageDirectoryPath + APP_DIR_PATH + 'CoverLetter.txt';
+		await RNFS.writeFile(
+			fileCLetterTxtPath,
+			genCoverLetterTxt({
+				pattern: cletter,
+				position,
+				shortPosition,
+				company,
+				isRecruiter,
+				skills: Object.values(switches).flatMap( sect => Object.entries(sect).filter(([key, [cl,res]]) => cl).map(([key, val]) => key) )
+			}),
+			'utf8'
+		);
+
+		Alert.alert('Generated PDF', `Saved at\n\n${coverLetter.filePath}\n\n${resume.filePath}\n\n${fileCLetterTxtPath}`);
+	} catch(err) {
+		Alert.alert('ERROR', err.message);
+	}
+}
 
 
 /*******************************************************************************************************/
@@ -667,9 +626,20 @@ async function archivate() {
 
 
 function SideBar({ onNavigate, onArchivate, onReset }) {
+	const dispatch = useGeneratorDispatch();
+
+	function handleArchivate() {
+		dispatch({ type: 'reset' });
+		onArchivate();
+	}
+	function handleReset() {
+		dispatch({ type: 'reset' });
+		onReset();
+	}
+
 	return	<View style={styles.side}>
-				<ActButton label="Reset" onPress={ () => onReset() } />
-				<ActButton label="Archivate" onPress={ () => onArchivate() } />
+				<ActButton label="Reset" onPress={ handleReset } />
+				<ActButton label="Archivate" onPress={ handleArchivate } />
 
 				<View style={{ height: 0, borderWidth:0.5, borderColor: 'grey', width: '75%', marginVertical: 30 }} />
 
