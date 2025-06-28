@@ -436,7 +436,7 @@ function B() {
 	);
 
 	return (
-		<View>
+		<View style={styles.skillsScreenRoot}>
 			<View style={styles.skillsSummary}>
 				<Pressable
 					onPress={() => Alert.alert(
@@ -451,7 +451,7 @@ function B() {
 							styles.skillsSummaryText,
 							data.skillsCount[0] < MIN_COVER_LETTER_SKILLS ? { color: 'red' } : undefined
 						] }>
-						{data.skillsCount[0]}
+						In Cover Letter: {data.skillsCount[0]}
 					</Text>
 				</Pressable>
 				<Pressable
@@ -467,7 +467,7 @@ function B() {
 							styles.skillsSummaryText,
 							data.skillsCount[1] < MIN_RESUME_SKILLS ? { color: 'red' } : undefined
 						] }>
-						{data.skillsCount[1]}
+						In Resume: {data.skillsCount[1]}
 					</Text>
 				</Pressable>
 			</View>
@@ -769,6 +769,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginHorizontal: 8
+	},
+	skillsScreenRoot: {
+		height: '100%',
+		backgroundColor: 'pink'
 	},
 	skillsSummary: {
 		alignSelf: 'flex-end',
