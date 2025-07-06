@@ -660,7 +660,7 @@ function generateCoverLetter({ pattern, position, shortPosition, company, isRecr
 </head>
 <body>
 	<h1>${persconf.name}</h1>
-	<p class="hdr pos">${position}</p>
+	<p class="hdr pos">${shortPosition}</p>
 	<br>
 	<table>
 		<tbody>
